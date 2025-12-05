@@ -1,0 +1,6 @@
+.app{font-family: Arial, sans-serif; padding:16px}
+.blend-wrap{display:flex; gap:16px}
+.canvas-area{flex:1}
+.palette{display:flex; gap:8px; align-items:center}
+.emotion-item{display:flex; flex-direction:column; align-items:center}
+.controls{margin-top:8px}
