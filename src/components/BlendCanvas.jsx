@@ -6,10 +6,37 @@ const EMOTIONS = [
   {id: 'happy', name: '快樂', src: '/assets/emotions/happy.png'}
 ]
 
+function hexFromRGB(r,g,b){
+  const toHex = v => v.toString(16).padStart(2,'0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+function nameFromColor(r,g,b){
+  // simple hue-ish mapping
+  const max = Math.max(r,g,b), min = Math.min(r,g,b)
+  const delta = max - min
+  let h = 0
+  if(delta === 0) h = 0
+  else if(max === r) h = ((g - b) / delta) % 6
+  else if(max === g) h = (b - r) / delta + 2
+  else h = (r - g) / delta + 4
+  h = Math.round(h * 60)
+  if(h < 0) h += 360
+  if(h >= 330 || h < 30) return '火焰怪'
+  if(h >= 30 && h < 90) return '陽光怪'
+  if(h >= 90 && h < 150) return '草地怪'
+  if(h >= 150 && h < 210) return '水滴怪'
+  if(h >= 210 && h < 270) return '夜空怪'
+  return '夢幻怪'
+}
+
 export default function BlendCanvas(){
   const canvasRef = useRef(null)
   const [elements, setElements] = useState([])
   const [imagesLoaded, setImagesLoaded] = useState({})
+  const [compositeColor, setCompositeColor] = useState('#ffffff')
+  const [monsterPreviewKey, setMonsterPreviewKey] = useState(0)
+  const [collectionCount, setCollectionCount] = useState(0)
 
   useEffect(()=>{
     const imgs = {}
@@ -41,10 +68,14 @@ export default function BlendCanvas(){
         }
       }
     })
+    // load collection count
+    const col = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    setCollectionCount(col.length)
   }, [])
 
   useEffect(()=>{
     redraw(imagesLoaded)
+    computeCompositeColor()
   }, [elements, imagesLoaded])
 
   function redraw(imgs){
@@ -60,6 +91,28 @@ export default function BlendCanvas(){
       if(img) ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
     })
     ctx.globalCompositeOperation = 'source-over'
+  }
+
+  function computeCompositeColor(){
+    const canvas = canvasRef.current
+    if(!canvas) return
+    const ctx = canvas.getContext('2d')
+    // sample a downscaled region for performance
+    const w = canvas.width, h = canvas.height
+    const data = ctx.getImageData(0,0,w,h).data
+    let r=0,g=0,b=0,count=0
+    for(let i=0;i<data.length;i+=4){
+      const alpha = data[i+3]
+      if(alpha>10){
+        r += data[i]
+        g += data[i+1]
+        b += data[i+2]
+        count++
+      }
+    }
+    if(count===0) return setCompositeColor('#ffffff')
+    r=Math.round(r/count); g=Math.round(g/count); b=Math.round(b/count)
+    setCompositeColor(hexFromRGB(r,g,b))
   }
 
   function onDragStart(e, id){
@@ -86,6 +139,35 @@ export default function BlendCanvas(){
     a.click()
   }
 
+  function awardEgg(){
+    // simulate awarding an egg after solving a prescription
+    const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
+    const egg = {id: `egg_${Date.now()}`, color: compositeColor, awardedAt: Date.now()}
+    eggs.push(egg)
+    localStorage.setItem('emo_eggs', JSON.stringify(eggs))
+    alert('獲得情緒蛋！可以到下方孵化。')
+  }
+
+  function hatchEgg(){
+    const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
+    if(eggs.length === 0){ alert('沒有情緒蛋可孵化'); return }
+    const egg = eggs.shift() // consume first egg
+    localStorage.setItem('emo_eggs', JSON.stringify(eggs))
+    // create monster from egg color
+    // parse rgb
+    const hex = egg.color.replace('#','')
+    const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
+    const name = nameFromColor(r,g,b)
+    const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    const monster = {id: `m_${Date.now()}`, color: egg.color, name, createdAt: Date.now()}
+    monsters.push(monster)
+    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+    setCollectionCount(monsters.length)
+    // simple notification and preview refresh
+    setMonsterPreviewKey(k=>k+1)
+    alert(`孵化完成：${name}`)
+  }
+
   return (
     <div className="blend-wrap">
       <div className="canvas-area">
@@ -97,6 +179,14 @@ export default function BlendCanvas(){
           onDragOver={onDragOver}
           style={{border: '1px solid #ccc', background: '#fff'}}
         />
+        <div style={{marginTop:8}}>
+          當前合成色： <span style={{display:'inline-block',width:24,height:24,background:compositeColor,border:'1px solid #333',verticalAlign:'middle'}} /> {compositeColor}
+        </div>
+        <div style={{marginTop:8}}>
+          <button onClick={awardEgg}>獲得情緒蛋（模擬）</button>
+          <button onClick={hatchEgg} style={{marginLeft:8}}>孵化情緒蛋</button>
+          <button onClick={exportPNG} style={{marginLeft:8}}>匯出 PNG</button>
+        </div>
       </div>
       <div className="palette">
         {EMOTIONS.map(e=> (
@@ -105,9 +195,19 @@ export default function BlendCanvas(){
             <div>{e.name}</div>
           </div>
         ))}
+        <div style={{marginTop:12}}>
+          收藏數量：{collectionCount}
+        </div>
       </div>
       <div className="controls">
-        <button onClick={exportPNG}>匯出 PNG</button>
+        <div style={{marginTop:12}}>
+          <div style={{width:120,height:120,display:'flex',alignItems:'center',justifyContent:'center',border:'1px dashed #666',borderRadius:12}} key={monsterPreviewKey}>
+            <div style={{width:80,height:80,borderRadius:40,background:compositeColor,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:'bold'}}>
+              怪
+            </div>
+          </div>
+          <div style={{marginTop:8}}>預覽怪獸（簡單程式化）</div>
+        </div>
       </div>
     </div>
   )
