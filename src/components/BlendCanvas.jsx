@@ -336,7 +336,11 @@ export default function BlendCanvas(){
     const name = nameFromColor(r,g,b)
     const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
     const monster = {id: `m_${Date.now()}`, color: egg.color, baseName: name, level: 1, exp: 0, name: `${name} Lv.1`, createdAt: Date.now()}
+    // award initial exp for hatching and auto-evolve if threshold met
+    monster.exp = (monster.exp || 0) + 6
     monsters.push(monster)
+    // try automatic evolution
+    tryAutoEvolve(monster, monsters)
     localStorage.setItem('emo_monsters', JSON.stringify(monsters))
     setCollectionCount(monsters.length)
     // simple notification and preview refresh with animation + particles + sound
@@ -366,8 +370,12 @@ export default function BlendCanvas(){
       const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
       const name = nameFromColor(r,g,b)
       const monster = {id: `m_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, color: egg.color, baseName: name, level: 1, exp: 0, name: `${name} Lv.1`, createdAt: Date.now()}
+      // award initial exp for hatching and attempt auto-evolve per monster
+      monster.exp = (monster.exp || 0) + 6
       monsters.push(monster)
       hatched.push(name)
+      // try auto evolve immediately
+      tryAutoEvolve(monster, monsters)
       // update storage incrementally so UI reflects progress
       localStorage.setItem('emo_monsters', JSON.stringify(monsters))
       const remaining = eggsArr.slice(i+1)
@@ -394,6 +402,26 @@ export default function BlendCanvas(){
     spawnParticles(m.color)
     playPopSound()
     alert(`進化完成：${m.name}`)
+  }
+
+  function tryAutoEvolve(monster, monsters){
+    // simple threshold: level * 5 exp to reach next level
+    const threshold = (monster.level || 1) * 5
+    let changed = false
+    while((monster.exp || 0) >= threshold){
+      monster.exp = (monster.exp || 0) - threshold
+      monster.level = (monster.level || 1) + 1
+      monster.name = `${monster.baseName || monster.name} Lv.${monster.level}`
+      changed = true
+      // visual + sound per auto-evo
+      spawnParticles(monster.color)
+      playPopSound()
+    }
+    if(changed){
+      // persist
+      localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+      setMonsterPreviewKey(k=>k+1)
+    }
   }
 
   return (
