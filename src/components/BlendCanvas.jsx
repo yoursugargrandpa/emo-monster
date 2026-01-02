@@ -41,6 +41,7 @@ export default function BlendCanvas(){
   const [isDragging, setIsDragging] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [dragPulse, setDragPulse] = useState(false)
+  const [hatchAnimating, setHatchAnimating] = useState(false)
 
   useEffect(()=>{
     const imgs = {}
@@ -252,8 +253,10 @@ export default function BlendCanvas(){
     monsters.push(monster)
     localStorage.setItem('emo_monsters', JSON.stringify(monsters))
     setCollectionCount(monsters.length)
-    // simple notification and preview refresh
+    // simple notification and preview refresh with animation
+    setHatchAnimating(true)
     setMonsterPreviewKey(k=>k+1)
+    setTimeout(()=> setHatchAnimating(false), 900)
     alert(`孵化完成：${name}`)
   }
 
