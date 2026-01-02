@@ -500,7 +500,10 @@ export default function BlendCanvas(){
             <label style={{fontSize:12,display:'flex',alignItems:'center'}}>音量:
               <input type="range" min="0" max="1" step="0.01" value={settings.volume} onChange={(ev)=>{ const v=parseFloat(ev.target.value)||0; const s2={...settings,volume:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}} />
             </label>
-            <button onClick={()=>{ const s2={particleCount:18,particleSize:6,volume:0.18}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}}>重置</button>
+            <label style={{fontSize:12}}>進化門檻基數:
+              <input type="number" value={settings.evoBase} onChange={(ev)=>{ const v=parseInt(ev.target.value)||0; const s2={...settings,evoBase:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{width:68, marginLeft:8}} />
+            </label>
+            <button onClick={()=>{ const s2={particleCount:18,particleSize:6,volume:0.18,evoBase:5}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}}>重置</button>
           </div>
         </div>
         <div style={{marginTop:12}}>
