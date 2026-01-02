@@ -26,6 +26,18 @@ export default function BlendCanvas(){
   const [settings, setSettings] = useState({particleCount:18, particleSize:6, volume:0.18, evoBase:5})
   const [evolveModalVisible, setEvolveModalVisible] = useState(false)
   const [evolveCandidate, setEvolveCandidate] = useState(null)
+  const [modalPulse, setModalPulse] = useState(false)
+
+  useEffect(()=>{
+    let iv = null
+    if(evolveModalVisible){
+      iv = setInterval(()=> setModalPulse(p=>!p), 420)
+      setModalPulse(true)
+    } else {
+      setModalPulse(false)
+    }
+    return ()=> iv && clearInterval(iv)
+  }, [evolveModalVisible])
 
   useEffect(()=>{
     try{
@@ -436,12 +448,18 @@ export default function BlendCanvas(){
                 const nextLevel = (m.level || 1) + 1
                 const expAfter = (m.exp || 0) - threshold
                 return (
-                  <div>
-                    <div style={{marginTop:6}}>目前：{m.baseName || m.name} • Level {m.level} • Exp {m.exp}</div>
-                    <div style={{marginTop:6}}>升級門檻：{threshold} exp</div>
-                    <div style={{marginTop:8, padding:8, background:'#fafafa', borderRadius:6}}>
-                      預覽：若確認，怪獸將升至 <strong>Level {nextLevel}</strong>{canAuto ? `（自動進化條件已達成，會嘗試進行更多升級）` : ''}
-                      <div style={{fontSize:12,color:'#666',marginTop:6}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
+                  <div style={{display:'flex', gap:12, alignItems:'center'}}>
+                    <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:120}}>
+                      <div style={{width:84,height:84,borderRadius:42,background:m.color,border:'2px solid #333',transform: modalPulse ? 'scale(1.06)' : 'scale(1)',transition:'transform 360ms ease'}} />
+                      <div style={{fontSize:12,marginTop:8}}>預覽色 / 縮圖</div>
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{marginTop:6}}>目前：{m.baseName || m.name} • Level {m.level} • Exp {m.exp}</div>
+                      <div style={{marginTop:6}}>升級門檻：{threshold} exp</div>
+                      <div style={{marginTop:8, padding:8, background:'#fafafa', borderRadius:6}}>
+                        預覽：若確認，怪獸將升至 <strong>Level {nextLevel}</strong>{canAuto ? `（自動進化條件已達成，會嘗試進行更多升級）` : ''}
+                        <div style={{fontSize:12,color:'#666',marginTop:6}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
+                      </div>
                     </div>
                   </div>
                 )
