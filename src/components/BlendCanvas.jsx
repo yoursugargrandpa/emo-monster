@@ -40,6 +40,7 @@ export default function BlendCanvas(){
   const [animatePreview, setAnimatePreview] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [dragPulse, setDragPulse] = useState(false)
 
   useEffect(()=>{
     const imgs = {}
@@ -96,6 +97,17 @@ export default function BlendCanvas(){
     window.addEventListener('resize', check)
     return ()=>window.removeEventListener('resize', check)
   }, [])
+
+  useEffect(()=>{
+    let iv = null
+    if(isDragging){
+      iv = setInterval(()=> setDragPulse(p => !p), 520)
+      setDragPulse(true)
+    } else {
+      setDragPulse(false)
+    }
+    return ()=> iv && clearInterval(iv)
+  }, [isDragging])
 
   function redraw(imgs){
     const canvas = canvasRef.current
@@ -247,7 +259,7 @@ export default function BlendCanvas(){
 
   return (
     <div className="blend-wrap">
-      <div className="canvas-area">
+      <div className="canvas-area" style={{position:'relative'}}>
         <canvas
           ref={canvasRef}
           width={640}
@@ -256,6 +268,21 @@ export default function BlendCanvas(){
           onDragOver={onDragOver}
           style={{border: '1px solid #ccc', background: '#fff'}}
         />
+        {isDragging && (
+          <div style={{
+            position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none',
+            background: 'rgba(255,255,255,0.45)',
+            border: '2px dashed #ff9800', borderRadius: 8,
+            transform: (typeof dragPulse !== 'undefined' && dragPulse) ? 'scale(1.02)' : 'scale(1)',
+            transition: 'transform 450ms ease, background 200ms ease'
+          }}>
+            <div style={{padding:12, background:'rgba(255,255,255,0.9)', borderRadius:8, boxShadow:'0 6px 18px rgba(0,0,0,0.12)'}}>
+              拖放表情到此或點擊表情以加入（手機支援）
+            </div>
+          </div>
+        )}
         <div style={{marginTop:8}}>
           當前合成色： <span style={{display:'inline-block',width:24,height:24,background:compositeColor,border:'1px solid #333',verticalAlign:'middle'}} /> {compositeColor}
         </div>
