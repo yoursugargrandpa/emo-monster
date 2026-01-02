@@ -1,2 +1,3 @@
 # emo-monster
-<!-- Initialized by init script -->
+
+A static frontend site (emo-monster).
