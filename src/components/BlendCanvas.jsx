@@ -1,34 +1,11 @@
 import React, {useRef, useEffect, useState} from 'react'
+import {hexFromRGB, nameFromColor} from '../utils.js'
 
 const EMOTIONS = [
   {id: 'angry', name: '生氣', src: '/assets/emotions/angry.png'},
   {id: 'sad', name: '難過', src: '/assets/emotions/sad.png'},
   {id: 'happy', name: '快樂', src: '/assets/emotions/happy.png'}
 ]
-
-function hexFromRGB(r,g,b){
-  const toHex = v => v.toString(16).padStart(2,'0')
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
-}
-
-function nameFromColor(r,g,b){
-  // simple hue-ish mapping
-  const max = Math.max(r,g,b), min = Math.min(r,g,b)
-  const delta = max - min
-  let h = 0
-  if(delta === 0) h = 0
-  else if(max === r) h = ((g - b) / delta) % 6
-  else if(max === g) h = (b - r) / delta + 2
-  else h = (r - g) / delta + 4
-  h = Math.round(h * 60)
-  if(h < 0) h += 360
-  if(h >= 330 || h < 30) return '火焰怪'
-  if(h >= 30 && h < 90) return '陽光怪'
-  if(h >= 90 && h < 150) return '草地怪'
-  if(h >= 150 && h < 210) return '水滴怪'
-  if(h >= 210 && h < 270) return '夜空怪'
-  return '夢幻怪'
-}
 
 export default function BlendCanvas(){
   const canvasRef = useRef(null)
@@ -422,6 +399,20 @@ export default function BlendCanvas(){
       localStorage.setItem('emo_monsters', JSON.stringify(monsters))
       setMonsterPreviewKey(k=>k+1)
     }
+  }
+
+  function awardExp(monsterId, amount){
+    try{
+      const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+      const m = monsters.find(x=>x.id === monsterId)
+      if(!m) return
+      m.exp = (m.exp || 0) + (amount || 1)
+      // attempt auto evolve after awarding exp
+      tryAutoEvolve(m, monsters)
+      localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+      setMonsterPreviewKey(k=>k+1)
+      setCollectionCount(monsters.length)
+    }catch(e){ console.warn('awardExp error', e) }
   }
 
   return (
