@@ -46,6 +46,14 @@ export default function BlendCanvas(){
   const particleRef = useRef(null)
   const particlesRef = useRef([])
   const particleAnimRef = useRef(null)
+  const [settings, setSettings] = useState({particleCount:18, particleSize:6, volume:0.18})
+
+  useEffect(()=>{
+    try{
+      const s = JSON.parse(localStorage.getItem('emo_settings') || '{}')
+      if(s && Object.keys(s).length) setSettings(prev=>({...prev,...s}))
+    }catch(e){}
+  }, [])
 
   function playPopSound(){
     try{
@@ -57,7 +65,8 @@ export default function BlendCanvas(){
       g.gain.value = 0.001
       o.connect(g); g.connect(ctx.destination)
       o.start()
-      g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01)
+      const vol = (settings && settings.volume) ? settings.volume : 0.18
+      g.gain.exponentialRampToValueAtTime(vol, ctx.currentTime + 0.01)
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25)
       o.stop(ctx.currentTime + 0.26)
     }catch(e){/* ignore audio errors */}
@@ -70,7 +79,7 @@ export default function BlendCanvas(){
     const rect = canvas.getBoundingClientRect()
     const cx = rect.width/2
     const cy = rect.height/2
-    const count = 18
+    const count = settings.particleCount || 18
     const arr = particlesRef.current
     for(let i=0;i<count;i++){
       const angle = Math.random()*Math.PI*2
@@ -79,7 +88,7 @@ export default function BlendCanvas(){
         x: cx, y: cy,
         vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - (Math.random()*1.5),
         life: 1, decay: 0.02 + Math.random()*0.03,
-        size: 4 + Math.random()*6,
+        size: (settings.particleSize || 6) * (0.6 + Math.random()*0.8),
         color
       })
     }
@@ -433,6 +442,20 @@ export default function BlendCanvas(){
                 <span style={{display:'inline-block',width:18,height:18,background:e.color,border:'1px solid #333',borderRadius:9,verticalAlign:'middle'}} />
               </span>
             ))}
+          </div>
+        </div>
+        <div style={{marginTop:12, borderTop:'1px dashed #eee', paddingTop:10}}>
+          <strong>視覺與音效設定</strong>
+          <div style={{marginTop:8,display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+            <label style={{fontSize:12}}>粒子數量:
+              <input type="number" value={settings.particleCount} onChange={(ev)=>{ const v=parseInt(ev.target.value)||0; const s2={...settings,particleCount:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{width:68, marginLeft:8}} />
+            </label>
+            <label style={{fontSize:12}}>粒子大小:
+              <input type="number" value={settings.particleSize} onChange={(ev)=>{ const v=parseFloat(ev.target.value)||0; const s2={...settings,particleSize:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{width:68, marginLeft:8}} />
+            </label>
+            <label style={{fontSize:12,display:'flex',alignItems:'center'}}>音量:
+              <input type="range" min="0" max="1" step="0.01" value={settings.volume} onChange={(ev)=>{ const v=parseFloat(ev.target.value)||0; const s2={...settings,volume:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}} />
+            </label>
           </div>
         </div>
       </div>
