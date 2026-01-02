@@ -27,6 +27,7 @@ export default function BlendCanvas(){
   const [evolveModalVisible, setEvolveModalVisible] = useState(false)
   const [evolveCandidate, setEvolveCandidate] = useState(null)
   const [modalPulse, setModalPulse] = useState(false)
+  const [evolveAnimating, setEvolveAnimating] = useState(false)
 
   useEffect(()=>{
     let iv = null
@@ -468,6 +469,54 @@ export default function BlendCanvas(){
     }catch(e){ console.warn('awardExp error', e) }
   }
 
+  function confirmEvolve(){
+    try{
+      const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+      const m = monsters.find(x=>x.id === evolveCandidate)
+      if(!m){ alert('找不到怪獸'); return }
+      
+      const threshold = (m.level || 1) * (settings.evoBase || 5)
+      if((m.exp || 0) < threshold){ alert('經驗值不足'); return }
+      
+      // Start evolution animation
+      setEvolveAnimating(true)
+      
+      // Perform evolution with visual feedback
+      const oldLevel = m.level || 1
+      m.exp = (m.exp || 0) - threshold
+      m.level = oldLevel + 1
+      m.name = `${m.baseName || m.name.split(' Lv')[0]} Lv.${m.level}`
+      
+      // Spawn multiple particles bursts for dramatic effect
+      for(let i=0; i<3; i++){
+        setTimeout(()=>{
+          spawnParticles(m.color)
+          playPopSound()
+        }, i * 200)
+      }
+      
+      // Persist changes
+      localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+      setMonsterPreviewKey(k=>k+1)
+      
+      // Close modal after animation
+      setTimeout(()=>{
+        setEvolveModalVisible(false)
+        setEvolveCandidate(null)
+        setEvolveAnimating(false)
+      }, 700)
+      
+      // Try auto-evolve if threshold is met again
+      tryAutoEvolve(m, monsters)
+      
+      alert(`進化成功！${m.baseName || m.name} 升至 Lv.${m.level}`)
+    }catch(e){
+      console.warn('confirmEvolve error', e)
+      alert('進化失敗')
+      setEvolveAnimating(false)
+    }
+  }
+
   return (
     <div className="blend-wrap">
       <div className="canvas-area" style={{position:'relative'}}>
@@ -481,8 +530,8 @@ export default function BlendCanvas(){
         />
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
-          <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.4)'}}>
-            <div style={{background:'#fff', padding:16, borderRadius:8, width:360}}>
+          <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.4)', zIndex:100}}>
+            <div style={{background:'#fff', padding:16, borderRadius:8, width:360, boxShadow:'0 10px 30px rgba(0,0,0,0.3)', transform: evolveAnimating ? 'scale(0.95)' : 'scale(1)', transition:'transform 600ms cubic-bezier(.2,.9,.3,1)', opacity: evolveAnimating ? 0.6 : 1}}>
               <h3>進化確認</h3>
               {(() => {
                 const mons = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
@@ -511,8 +560,8 @@ export default function BlendCanvas(){
               })()}
 
               <div style={{marginTop:12, display:'flex', justifyContent:'flex-end'}}>
-                <button onClick={()=>setEvolveModalVisible(false)} style={{marginRight:8}}>取消</button>
-                <button onClick={confirmEvolve}>確認進化</button>
+                <button onClick={()=>setEvolveModalVisible(false)} style={{marginRight:8}} disabled={evolveAnimating}>取消</button>
+                <button onClick={confirmEvolve} disabled={evolveAnimating}>確認進化</button>
               </div>
             </div>
           </div>
