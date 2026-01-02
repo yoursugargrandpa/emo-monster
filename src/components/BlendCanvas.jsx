@@ -162,6 +162,39 @@ export default function BlendCanvas(){
     URL.revokeObjectURL(url)
   }
 
+  function exportSVG(){
+    const canvas = canvasRef.current
+    const dataURL = canvas.toDataURL('image/png')
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}"><image href="${dataURL}" width="${canvas.width}" height="${canvas.height}"/></svg>`
+    const blob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'emo-composite.svg'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function exportBundle(){
+    const canvas = canvasRef.current
+    const dataURL = canvas.toDataURL('image/png')
+    const bundle = {
+      metadata: {
+        color: compositeColor,
+        name: nameFromColor(parseInt(compositeColor.slice(1,3),16), parseInt(compositeColor.slice(3,5),16), parseInt(compositeColor.slice(5,7),16)),
+        timestamp: new Date().toISOString()
+      },
+      imageDataURL: dataURL
+    }
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], {type: 'application/json'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'emo-bundle.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   function awardEgg(){
     // simulate awarding an egg after solving a prescription
     const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
@@ -209,6 +242,9 @@ export default function BlendCanvas(){
           <button onClick={awardEgg}>獲得情緒蛋（模擬）</button>
           <button onClick={hatchEgg} style={{marginLeft:8}}>孵化情緒蛋</button>
           <button onClick={exportPNG} style={{marginLeft:8}}>匯出 PNG</button>
+          <button onClick={exportJSON} style={{marginLeft:8}}>匯出 JSON</button>
+          <button onClick={exportSVG} style={{marginLeft:8}}>匯出 SVG</button>
+          <button onClick={exportBundle} style={{marginLeft:8}}>匯出 Bundle</button>
         </div>
       </div>
       <div className="palette">
