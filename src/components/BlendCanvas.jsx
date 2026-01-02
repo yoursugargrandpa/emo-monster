@@ -263,27 +263,33 @@ export default function BlendCanvas(){
     alert(`孵化完成：${name}`)
   }
 
-  function hatchAll(){
-    const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
-    if(eggs.length === 0){ alert('沒有情緒蛋可孵化'); return }
+  async function hatchAll(){
+    const eggsArr = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
+    if(eggsArr.length === 0){ alert('沒有情緒蛋可孵化'); return }
     const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
     const hatched = []
-    eggs.forEach(egg => {
+    for(let i=0;i<eggsArr.length;i++){
+      const egg = eggsArr[i]
+      // pre-hatch delay / cracking
+      setHatchAnimating(true)
+      await new Promise(r=>setTimeout(r, 650))
       const hex = egg.color.replace('#','')
       const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
       const name = nameFromColor(r,g,b)
       const monster = {id: `m_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, color: egg.color, name, createdAt: Date.now()}
       monsters.push(monster)
       hatched.push(name)
-    })
-    // clear eggs
-    localStorage.setItem('emo_eggs', JSON.stringify([]))
-    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
-    setEggs([])
-    setCollectionCount(monsters.length)
-    setHatchAnimating(true)
-    setMonsterPreviewKey(k=>k+1)
-    setTimeout(()=> setHatchAnimating(false), 1000)
+      // update storage incrementally so UI reflects progress
+      localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+      const remaining = eggsArr.slice(i+1)
+      localStorage.setItem('emo_eggs', JSON.stringify(remaining))
+      setEggs(remaining)
+      setCollectionCount(monsters.length)
+      setMonsterPreviewKey(k=>k+1)
+      // short post-hatch pause for visual
+      await new Promise(r=>setTimeout(r, 280))
+      setHatchAnimating(false)
+    }
     alert(`孵化完成：共 ${hatched.length} 隻 (${hatched.join(', ')})`)
   }
 
