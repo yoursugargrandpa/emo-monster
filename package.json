@@ -10,5 +10,13 @@
     "start": "electron .",
     "init": "bash ./scripts/init.sh",
     "test": "node test/test_utils.mjs && node test/test_export.mjs"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8"
   }
 }
