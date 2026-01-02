@@ -7,6 +7,15 @@ const EMOTIONS = [
   {id: 'happy', name: '快樂', src: '/assets/emotions/happy.png'}
 ]
 
+const SHOP_ITEMS = [
+  {id: 'wing', name: '翅膀', cost: 5, emoji: '✨', rarity: 'common'},
+  {id: 'horn', name: '角', cost: 8, emoji: '👑', rarity: 'rare'},
+  {id: 'crown', name: '皇冠', cost: 15, emoji: '👑', rarity: 'epic'},
+  {id: 'star', name: '星星', cost: 3, emoji: '⭐', rarity: 'common'},
+  {id: 'flame', name: '火焰', cost: 12, emoji: '🔥', rarity: 'rare'},
+  {id: 'heart', name: '心形', cost: 10, emoji: '❤️', rarity: 'rare'}
+]
+
 export default function BlendCanvas(){
   const canvasRef = useRef(null)
   const [elements, setElements] = useState([])
@@ -28,6 +37,8 @@ export default function BlendCanvas(){
   const [evolveCandidate, setEvolveCandidate] = useState(null)
   const [modalPulse, setModalPulse] = useState(false)
   const [evolveAnimating, setEvolveAnimating] = useState(false)
+  const [shopVisible, setShopVisible] = useState(false)
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState(null)
 
   useEffect(()=>{
     let iv = null
@@ -161,6 +172,12 @@ export default function BlendCanvas(){
     setMonsterPreviewKey(k=>k+1)
     spawnParticles(m.color)
     playPopSound()
+  }
+
+  function removeItemFromInventory(iid){
+    const inv = inventory.filter(x => x.iid !== iid)
+    setInventory(inv)
+    localStorage.setItem('emo_inventory', JSON.stringify(inv))
   }
 
 
@@ -566,6 +583,51 @@ export default function BlendCanvas(){
             </div>
           </div>
         )}
+        {shopVisible && (
+          <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.5)', zIndex:10}}>
+            <div style={{background:'#fff', padding:20, borderRadius:12, maxWidth:700, maxHeight:'80vh', overflowY:'auto', boxShadow:'0 10px 40px rgba(0,0,0,0.3)'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
+                <h2>🛍️ 商店</h2>
+                <button onClick={()=>setShopVisible(false)} style={{fontSize:20, border:'none', background:'none', cursor:'pointer'}}>✕</button>
+              </div>
+              
+              <div style={{marginBottom:16, padding:12, background:'#fffde7', borderRadius:8}}>
+                <strong style={{fontSize:18}}>💰 你的金幣：{coins}</strong>
+              </div>
+
+              <h3 style={{marginTop:16, marginBottom:12}}>📦 商品列表</h3>
+              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(140px, 1fr))', gap:12, marginBottom:20}}>
+                {SHOP_ITEMS.map(item => (
+                  <div key={item.id} style={{border:'1px solid #ddd', borderRadius:8, padding:12, textAlign:'center', background:'#fafafa', transition:'all 200ms ease', cursor:'pointer'}} onMouseEnter={(e)=>e.currentTarget.style.transform='scale(1.05)'} onMouseLeave={(e)=>e.currentTarget.style.transform='scale(1)'}>
+                    <div style={{fontSize:32, marginBottom:8}}>{item.emoji}</div>
+                    <div style={{fontWeight:'bold', marginBottom:6}}>{item.name}</div>
+                    <div style={{fontSize:12, color:'#666', marginBottom:8}}>💰 {item.cost}</div>
+                    <button onClick={()=>buyItem(item)} style={{width:'100%', padding:'6px 8px', background:coins>=item.cost?'#4caf50':'#ccc', color:'#fff', border:'none', borderRadius:4, cursor:coins>=item.cost?'pointer':'not-allowed'}}>購買</button>
+                  </div>
+                ))}
+              </div>
+
+              <h3 style={{marginTop:16, marginBottom:12}}>背包 ({inventory.length})</h3>
+              {inventory.length === 0 ? (
+                <div style={{padding:12, background:'#f5f5f5', borderRadius:8, color:'#999'}}>背包空空的</div>
+              ) : (
+                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(120px, 1fr))', gap:12}}>
+                  {inventory.map(item => (
+                    <div key={item.iid} style={{border:'1px solid #bbb', borderRadius:8, padding:12, background:'#e8f5e9', textAlign:'center'}}>
+                      <div style={{fontSize:28, marginBottom:6}}>{item.emoji}</div>
+                      <div style={{fontWeight:'bold', fontSize:12, marginBottom:8}}>{item.name}</div>
+                      <button onClick={()=>removeItemFromInventory(item.iid)} style={{width:'100%', padding:'4px 6px', fontSize:11, background:'#f44336', color:'#fff', border:'none', borderRadius:4, cursor:'pointer'}}>丟棄</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{marginTop:16, display:'flex', justifyContent:'flex-end'}}>
+                <button onClick={()=>setShopVisible(false)} style={{padding:'8px 16px', fontSize:14}}>關閉</button>
+              </div>
+            </div>
+          </div>
+        )}
         {isDragging && (
           <div style={{
             position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
@@ -583,6 +645,12 @@ export default function BlendCanvas(){
         )}
         <div style={{marginTop:8}}>
           當前合成色： <span style={{display:'inline-block',width:24,height:24,background:compositeColor,border:'1px solid #333',verticalAlign:'middle'}} /> {compositeColor}
+        </div>
+        <div style={{marginTop:8, padding:10, background:'#fffde7', borderRadius:6, display:'flex', alignItems:'center', gap:12}}>
+          <span style={{fontSize:18}}>💰</span>
+          <strong>金幣：{coins}</strong>
+          <button onClick={earnChallenge} style={{marginLeft:8, padding:'4px 12px'}}>完成挑戰 +10</button>
+          <button onClick={()=>setShopVisible(true)} style={{marginLeft:8, padding:'4px 12px'}}>🛍️ 進入商店</button>
         </div>
         <div style={{marginTop:8}}>
           <button onClick={awardEgg}>獲得情緒蛋（模擬）</button>
@@ -614,6 +682,39 @@ export default function BlendCanvas(){
                 <span style={{display:'inline-block',width:18,height:18,background:e.color,border:'1px solid #333',borderRadius:9,verticalAlign:'middle'}} />
               </span>
             ))}
+          </div>
+        </div>
+
+        <div style={{marginTop:12, padding:10, background:'#e3f2fd', borderRadius:8}}>
+          <strong>🎖️ 怪獸配件</strong>
+          <div style={{marginTop:8, maxHeight:200, overflowY:'auto'}}>
+            {(() => {
+              try {
+                const mons = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+                if(mons.length === 0) return <div style={{fontSize:12, color:'#666'}}>暫無怪獸</div>
+                return (
+                  <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                    {mons.map(m => (
+                      <div key={m.id} style={{padding:8, background:'#fff', borderRadius:6, border:'1px solid #90caf9'}}>
+                        <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:4}}>
+                          <span style={{display:'inline-block',width:20,height:20,borderRadius:10,background:m.color,border:'1px solid #333'}} />
+                          <strong style={{fontSize:12}}>{m.name}</strong>
+                        </div>
+                        {(m.accessories && m.accessories.length > 0) ? (
+                          <div style={{display:'flex', gap:4}}>
+                            {m.accessories.map((acc, idx) => (
+                              <span key={idx} title={acc.name} style={{fontSize:14}}>{acc.emoji}</span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{fontSize:11, color:'#999'}}>無配件</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )
+              } catch(e) { return null }
+            })()}
           </div>
         </div>
 
