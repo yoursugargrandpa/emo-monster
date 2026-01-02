@@ -23,7 +23,9 @@ export default function BlendCanvas(){
   const particleRef = useRef(null)
   const particlesRef = useRef([])
   const particleAnimRef = useRef(null)
-  const [settings, setSettings] = useState({particleCount:18, particleSize:6, volume:0.18})
+  const [settings, setSettings] = useState({particleCount:18, particleSize:6, volume:0.18, evoBase:5})
+  const [evolveModalVisible, setEvolveModalVisible] = useState(false)
+  const [evolveCandidate, setEvolveCandidate] = useState(null)
 
   useEffect(()=>{
     try{
@@ -371,19 +373,13 @@ export default function BlendCanvas(){
     const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
     if(monsters.length === 0){ alert('沒有怪獸可進化'); return }
     const m = monsters[monsters.length-1]
-    m.level = (m.level || 1) + 1
-    m.name = `${m.baseName || m.name} Lv.${m.level}`
-    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
-    setCollectionCount(monsters.length)
-    setMonsterPreviewKey(k=>k+1)
-    spawnParticles(m.color)
-    playPopSound()
-    alert(`進化完成：${m.name}`)
+    setEvolveCandidate(m.id)
+    setEvolveModalVisible(true)
   }
 
   function tryAutoEvolve(monster, monsters){
     // simple threshold: level * 5 exp to reach next level
-    const threshold = (monster.level || 1) * 5
+    const threshold = (monster.level || 1) * (settings.evoBase || 5)
     let changed = false
     while((monster.exp || 0) >= threshold){
       monster.exp = (monster.exp || 0) - threshold
@@ -427,6 +423,18 @@ export default function BlendCanvas(){
           style={{border: '1px solid #ccc', background: '#fff'}}
         />
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
+        {evolveModalVisible && (
+          <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.4)'}}>
+            <div style={{background:'#fff', padding:16, borderRadius:8, width:320}}>
+              <h3>進化確認</h3>
+              <div>確定要讓選定的怪獸進化嗎？</div>
+              <div style={{marginTop:12, display:'flex', justifyContent:'flex-end'}}>
+                <button onClick={()=>setEvolveModalVisible(false)} style={{marginRight:8}}>取消</button>
+                <button onClick={confirmEvolve}>確認進化</button>
+              </div>
+            </div>
+          </div>
+        )}
         {isDragging && (
           <div style={{
             position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
