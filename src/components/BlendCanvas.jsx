@@ -37,6 +37,7 @@ export default function BlendCanvas(){
   const [compositeColor, setCompositeColor] = useState('#ffffff')
   const [monsterPreviewKey, setMonsterPreviewKey] = useState(0)
   const [collectionCount, setCollectionCount] = useState(0)
+  const [animatePreview, setAnimatePreview] = useState(false)
 
   useEffect(()=>{
     const imgs = {}
@@ -77,6 +78,13 @@ export default function BlendCanvas(){
     redraw(imagesLoaded)
     computeCompositeColor()
   }, [elements, imagesLoaded])
+
+  useEffect(()=>{
+    // trigger animation when preview key changes
+    setAnimatePreview(true)
+    const t = setTimeout(()=>setAnimatePreview(false), 700)
+    return ()=>clearTimeout(t)
+  }, [monsterPreviewKey])
 
   function redraw(imgs){
     const canvas = canvasRef.current
@@ -202,7 +210,12 @@ export default function BlendCanvas(){
       <div className="controls">
         <div style={{marginTop:12}}>
           <div style={{width:120,height:120,display:'flex',alignItems:'center',justifyContent:'center',border:'1px dashed #666',borderRadius:12}} key={monsterPreviewKey}>
-            <div style={{width:80,height:80,borderRadius:40,background:compositeColor,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:'bold'}}>
+            <div style={{
+              width:80,height:80,borderRadius:40,background:compositeColor,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:'bold',
+              transform: animatePreview ? 'scale(1.18)' : 'scale(1)',
+              transition: 'transform 620ms cubic-bezier(.2,.9,.3,1)',
+              boxShadow: animatePreview ? '0 8px 20px rgba(0,0,0,0.25)' : 'none'
+            }}>
               怪
             </div>
           </div>
