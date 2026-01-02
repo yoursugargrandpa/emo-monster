@@ -38,6 +38,8 @@ export default function BlendCanvas(){
   const [monsterPreviewKey, setMonsterPreviewKey] = useState(0)
   const [collectionCount, setCollectionCount] = useState(0)
   const [animatePreview, setAnimatePreview] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(()=>{
     const imgs = {}
@@ -86,6 +88,15 @@ export default function BlendCanvas(){
     return ()=>clearTimeout(t)
   }, [monsterPreviewKey])
 
+  useEffect(()=>{
+    const check = ()=>{
+      setIsMobile(typeof window !== 'undefined' && window.innerWidth < 600)
+    }
+    check()
+    window.addEventListener('resize', check)
+    return ()=>window.removeEventListener('resize', check)
+  }, [])
+
   function redraw(imgs){
     const canvas = canvasRef.current
     if(!canvas) return
@@ -129,6 +140,7 @@ export default function BlendCanvas(){
 
   function onDrop(e){
     e.preventDefault()
+    setIsDragging(false)
     const id = e.dataTransfer.getData('text/emotion')
     const rect = canvasRef.current.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -136,7 +148,16 @@ export default function BlendCanvas(){
     setElements(prev => [...prev, {id, x, y}])
   }
 
-  function onDragOver(e){ e.preventDefault() }
+  function onDragOver(e){ e.preventDefault(); if(!isDragging) setIsDragging(true) }
+
+  function addEmotionAtCenter(id){
+    const canvas = canvasRef.current
+    if(!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = rect.width/2
+    const y = rect.height/2
+    setElements(prev=>[...prev,{id,x,y}])
+  }
 
   function exportPNG(){
     const canvas = canvasRef.current
