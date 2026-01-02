@@ -37,6 +37,7 @@ export default function BlendCanvas(){
   const [compositeColor, setCompositeColor] = useState('#ffffff')
   const [monsterPreviewKey, setMonsterPreviewKey] = useState(0)
   const [collectionCount, setCollectionCount] = useState(0)
+  const [eggs, setEggs] = useState([])
   const [animatePreview, setAnimatePreview] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -73,9 +74,11 @@ export default function BlendCanvas(){
         }
       }
     })
-    // load collection count
+    // load collection count and eggs
     const col = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
     setCollectionCount(col.length)
+    const eg = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
+    setEggs(eg)
   }, [])
 
   useEffect(()=>{
@@ -260,6 +263,30 @@ export default function BlendCanvas(){
     alert(`孵化完成：${name}`)
   }
 
+  function hatchAll(){
+    const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
+    if(eggs.length === 0){ alert('沒有情緒蛋可孵化'); return }
+    const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    const hatched = []
+    eggs.forEach(egg => {
+      const hex = egg.color.replace('#','')
+      const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
+      const name = nameFromColor(r,g,b)
+      const monster = {id: `m_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, color: egg.color, name, createdAt: Date.now()}
+      monsters.push(monster)
+      hatched.push(name)
+    })
+    // clear eggs
+    localStorage.setItem('emo_eggs', JSON.stringify([]))
+    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+    setEggs([])
+    setCollectionCount(monsters.length)
+    setHatchAnimating(true)
+    setMonsterPreviewKey(k=>k+1)
+    setTimeout(()=> setHatchAnimating(false), 1000)
+    alert(`孵化完成：共 ${hatched.length} 隻 (${hatched.join(', ')})`)
+  }
+
   return (
     <div className="blend-wrap">
       <div className="canvas-area" style={{position:'relative'}}>
@@ -307,6 +334,19 @@ export default function BlendCanvas(){
         ))}
         <div style={{marginTop:12}}>
           收藏數量：{collectionCount}
+        </div>
+        <div style={{marginTop:8}}>
+          情緒蛋：{eggs.length}
+          {eggs.length>0 && (
+            <button onClick={hatchAll} style={{marginLeft:8}}>孵化全部</button>
+          )}
+          <div style={{marginTop:6}}>
+            {eggs.map(e=> (
+              <span key={e.id} style={{display:'inline-block',marginRight:8}} title={new Date(e.awardedAt).toLocaleString()}>
+                <span style={{display:'inline-block',width:18,height:18,background:e.color,border:'1px solid #333',borderRadius:9,verticalAlign:'middle'}} />
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <div className="controls">
