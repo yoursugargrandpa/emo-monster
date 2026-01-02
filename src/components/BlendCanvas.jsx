@@ -43,6 +43,80 @@ export default function BlendCanvas(){
   const [isMobile, setIsMobile] = useState(false)
   const [dragPulse, setDragPulse] = useState(false)
   const [hatchAnimating, setHatchAnimating] = useState(false)
+  const particleRef = useRef(null)
+  const particlesRef = useRef([])
+  const particleAnimRef = useRef(null)
+
+  function playPopSound(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)()
+      const o = ctx.createOscillator()
+      const g = ctx.createGain()
+      o.type = 'sine'
+      o.frequency.value = 800
+      g.gain.value = 0.001
+      o.connect(g); g.connect(ctx.destination)
+      o.start()
+      g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01)
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25)
+      o.stop(ctx.currentTime + 0.26)
+    }catch(e){/* ignore audio errors */}
+  }
+
+  function spawnParticles(color){
+    const canvas = canvasRef.current
+    const pCanvas = particleRef.current
+    if(!canvas || !pCanvas) return
+    const rect = canvas.getBoundingClientRect()
+    const cx = rect.width/2
+    const cy = rect.height/2
+    const count = 18
+    const arr = particlesRef.current
+    for(let i=0;i<count;i++){
+      const angle = Math.random()*Math.PI*2
+      const speed = 1 + Math.random()*3
+      arr.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - (Math.random()*1.5),
+        life: 1, decay: 0.02 + Math.random()*0.03,
+        size: 4 + Math.random()*6,
+        color
+      })
+    }
+    // start animation loop
+    if(!particleAnimRef.current){
+      const ctx = pCanvas.getContext('2d')
+      const step = ()=>{
+        pCanvas.width = canvas.width
+        pCanvas.height = canvas.height
+        ctx.clearRect(0,0,pCanvas.width,pCanvas.height)
+        const next = []
+        arr.forEach(p=>{
+          p.x += p.vx
+          p.y += p.vy
+          p.vy += 0.08
+          p.life -= p.decay
+          if(p.life>0){
+            ctx.globalAlpha = Math.max(0, p.life)
+            ctx.fillStyle = p.color
+            ctx.beginPath()
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI*2)
+            ctx.fill()
+            next.push(p)
+          }
+        })
+        particlesRef.current = next
+        if(next.length>0){
+          particleAnimRef.current = requestAnimationFrame(step)
+        } else {
+          particleAnimRef.current = null
+          ctx.clearRect(0,0,pCanvas.width,pCanvas.height)
+        }
+      }
+      particleAnimRef.current = requestAnimationFrame(step)
+    }
+  }
+
 
   useEffect(()=>{
     const imgs = {}
@@ -256,8 +330,10 @@ export default function BlendCanvas(){
     monsters.push(monster)
     localStorage.setItem('emo_monsters', JSON.stringify(monsters))
     setCollectionCount(monsters.length)
-    // simple notification and preview refresh with animation
+    // simple notification and preview refresh with animation + particles + sound
     setHatchAnimating(true)
+    spawnParticles(egg.color)
+    playPopSound()
     setMonsterPreviewKey(k=>k+1)
     setTimeout(()=> setHatchAnimating(false), 900)
     alert(`孵化完成：${name}`)
@@ -272,7 +348,11 @@ export default function BlendCanvas(){
       const egg = eggsArr[i]
       // pre-hatch delay / cracking
       setHatchAnimating(true)
-      await new Promise(r=>setTimeout(r, 650))
+      await new Promise(r=>setTimeout(r, 520))
+      // particle + sound per egg
+      spawnParticles(egg.color)
+      playPopSound()
+      await new Promise(r=>setTimeout(r, 180))
       const hex = egg.color.replace('#','')
       const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
       const name = nameFromColor(r,g,b)
@@ -287,7 +367,7 @@ export default function BlendCanvas(){
       setCollectionCount(monsters.length)
       setMonsterPreviewKey(k=>k+1)
       // short post-hatch pause for visual
-      await new Promise(r=>setTimeout(r, 280))
+      await new Promise(r=>setTimeout(r, 260))
       setHatchAnimating(false)
     }
     alert(`孵化完成：共 ${hatched.length} 隻 (${hatched.join(', ')})`)
@@ -304,6 +384,7 @@ export default function BlendCanvas(){
           onDragOver={onDragOver}
           style={{border: '1px solid #ccc', background: '#fff'}}
         />
+        <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {isDragging && (
           <div style={{
             position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
