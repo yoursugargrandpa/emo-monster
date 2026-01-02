@@ -43,6 +43,10 @@ export default function BlendCanvas(){
     try{
       const s = JSON.parse(localStorage.getItem('emo_settings') || '{}')
       if(s && Object.keys(s).length) setSettings(prev=>({...prev,...s}))
+      const c = parseInt(localStorage.getItem('emo_coins') || '0', 10)
+      setCoins(isNaN(c) ? 0 : c)
+      const inv = JSON.parse(localStorage.getItem('emo_inventory') || '[]')
+      setInventory(inv)
     }catch(e){}
   }, [])
 
@@ -115,6 +119,47 @@ export default function BlendCanvas(){
       }
       particleAnimRef.current = requestAnimationFrame(step)
     }
+  }
+
+  // Shop and inventory
+  const [coins, setCoins] = useState(0)
+  const [inventory, setInventory] = useState([])
+
+  function earnChallenge(){
+    const v = (coins || 0) + 10
+    setCoins(v)
+    localStorage.setItem('emo_coins', String(v))
+    spawnParticles('#8bc34a')
+  }
+
+  function buyItem(item){
+    if((coins || 0) < item.cost){ alert('金幣不足'); return }
+    const v = (coins || 0) - item.cost
+    setCoins(v)
+    localStorage.setItem('emo_coins', String(v))
+    const invItem = {...item, iid: `inv_${Date.now()}`}
+    const n = [...inventory, invItem]
+    setInventory(n)
+    localStorage.setItem('emo_inventory', JSON.stringify(n))
+    spawnParticles('#ffd54f')
+    playPopSound()
+  }
+
+  function equipItemToMonster(monsterId){
+    const inv = JSON.parse(localStorage.getItem('emo_inventory') || '[]')
+    if(inv.length === 0){ alert('無可裝備物品'); return }
+    const item = inv.shift()
+    const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    const m = monsters.find(x=>x.id === monsterId)
+    if(!m){ alert('找不到怪獸'); return }
+    m.accessories = m.accessories || []
+    m.accessories.push(item)
+    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+    setInventory(inv)
+    localStorage.setItem('emo_inventory', JSON.stringify(inv))
+    setMonsterPreviewKey(k=>k+1)
+    spawnParticles(m.color)
+    playPopSound()
   }
 
 
