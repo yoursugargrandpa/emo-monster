@@ -335,7 +335,7 @@ export default function BlendCanvas(){
     const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
     const name = nameFromColor(r,g,b)
     const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
-    const monster = {id: `m_${Date.now()}`, color: egg.color, name, createdAt: Date.now()}
+    const monster = {id: `m_${Date.now()}`, color: egg.color, baseName: name, level: 1, exp: 0, name: `${name} Lv.1`, createdAt: Date.now()}
     monsters.push(monster)
     localStorage.setItem('emo_monsters', JSON.stringify(monsters))
     setCollectionCount(monsters.length)
@@ -345,7 +345,7 @@ export default function BlendCanvas(){
     playPopSound()
     setMonsterPreviewKey(k=>k+1)
     setTimeout(()=> setHatchAnimating(false), 900)
-    alert(`孵化完成：${name}`)
+    alert(`孵化完成：${monster.name}`)
   }
 
   async function hatchAll(){
@@ -365,7 +365,7 @@ export default function BlendCanvas(){
       const hex = egg.color.replace('#','')
       const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16)
       const name = nameFromColor(r,g,b)
-      const monster = {id: `m_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, color: egg.color, name, createdAt: Date.now()}
+      const monster = {id: `m_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, color: egg.color, baseName: name, level: 1, exp: 0, name: `${name} Lv.1`, createdAt: Date.now()}
       monsters.push(monster)
       hatched.push(name)
       // update storage incrementally so UI reflects progress
@@ -380,6 +380,20 @@ export default function BlendCanvas(){
       setHatchAnimating(false)
     }
     alert(`孵化完成：共 ${hatched.length} 隻 (${hatched.join(', ')})`)
+  }
+
+  function evolveLastMonster(){
+    const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    if(monsters.length === 0){ alert('沒有怪獸可進化'); return }
+    const m = monsters[monsters.length-1]
+    m.level = (m.level || 1) + 1
+    m.name = `${m.baseName || m.name} Lv.${m.level}`
+    localStorage.setItem('emo_monsters', JSON.stringify(monsters))
+    setCollectionCount(monsters.length)
+    setMonsterPreviewKey(k=>k+1)
+    spawnParticles(m.color)
+    playPopSound()
+    alert(`進化完成：${m.name}`)
   }
 
   return (
@@ -473,7 +487,7 @@ export default function BlendCanvas(){
               怪
             </div>
           </div>
-          <div style={{marginTop:8}}>預覽怪獸（簡單程式化）</div>
+          <div style={{marginTop:8}}>預覽怪獸（簡單程式化） <button onClick={evolveLastMonster} style={{marginLeft:8}}>進化最近孵化的怪獸</button></div>
         </div>
       </div>
     </div>
