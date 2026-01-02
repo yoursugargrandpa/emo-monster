@@ -2,11 +2,13 @@
   "name": "emo-monster",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "start": "electron .",
-    "init": "bash ./scripts/init.sh"
+    "init": "bash ./scripts/init.sh",
+    "test": "node test/test_utils.mjs"
   }
 }
