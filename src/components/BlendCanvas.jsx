@@ -425,9 +425,28 @@ export default function BlendCanvas(){
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
           <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.4)'}}>
-            <div style={{background:'#fff', padding:16, borderRadius:8, width:320}}>
+            <div style={{background:'#fff', padding:16, borderRadius:8, width:360}}>
               <h3>進化確認</h3>
-              <div>確定要讓選定的怪獸進化嗎？</div>
+              {(() => {
+                const mons = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+                const m = mons.find(x=>x.id === evolveCandidate)
+                if(!m) return <div>找不到怪獸</div>
+                const threshold = (m.level || 1) * (settings.evoBase || 5)
+                const canAuto = (m.exp || 0) >= threshold
+                const nextLevel = (m.level || 1) + 1
+                const expAfter = (m.exp || 0) - threshold
+                return (
+                  <div>
+                    <div style={{marginTop:6}}>目前：{m.baseName || m.name} • Level {m.level} • Exp {m.exp}</div>
+                    <div style={{marginTop:6}}>升級門檻：{threshold} exp</div>
+                    <div style={{marginTop:8, padding:8, background:'#fafafa', borderRadius:6}}>
+                      預覽：若確認，怪獸將升至 <strong>Level {nextLevel}</strong>{canAuto ? `（自動進化條件已達成，會嘗試進行更多升級）` : ''}
+                      <div style={{fontSize:12,color:'#666',marginTop:6}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
+                    </div>
+                  </div>
+                )
+              })()}
+
               <div style={{marginTop:12, display:'flex', justifyContent:'flex-end'}}>
                 <button onClick={()=>setEvolveModalVisible(false)} style={{marginRight:8}}>取消</button>
                 <button onClick={confirmEvolve}>確認進化</button>
