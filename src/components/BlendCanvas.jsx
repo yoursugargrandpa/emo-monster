@@ -444,8 +444,11 @@ export default function BlendCanvas(){
             ))}
           </div>
         </div>
-        <div style={{marginTop:12, borderTop:'1px dashed #eee', paddingTop:10}}>
-          <strong>視覺與音效設定</strong>
+
+      </div>
+      <div className="controls">
+        <div style={{marginBottom:12, padding:10, border:'1px solid #eee', borderRadius:8, background:'#fff'}}>
+          <strong>視覺與音效設定（醒目）</strong>
           <div style={{marginTop:8,display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
             <label style={{fontSize:12}}>粒子數量:
               <input type="number" value={settings.particleCount} onChange={(ev)=>{ const v=parseInt(ev.target.value)||0; const s2={...settings,particleCount:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{width:68, marginLeft:8}} />
@@ -456,10 +459,9 @@ export default function BlendCanvas(){
             <label style={{fontSize:12,display:'flex',alignItems:'center'}}>音量:
               <input type="range" min="0" max="1" step="0.01" value={settings.volume} onChange={(ev)=>{ const v=parseFloat(ev.target.value)||0; const s2={...settings,volume:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}} />
             </label>
+            <button onClick={()=>{ const s2={particleCount:18,particleSize:6,volume:0.18}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}}>重置</button>
           </div>
         </div>
-      </div>
-      <div className="controls">
         <div style={{marginTop:12}}>
           <div style={{width:120,height:120,display:'flex',alignItems:'center',justifyContent:'center',border:'1px dashed #666',borderRadius:12}} key={monsterPreviewKey}>
             <div style={{
