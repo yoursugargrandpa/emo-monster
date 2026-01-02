@@ -147,6 +147,21 @@ export default function BlendCanvas(){
     a.click()
   }
 
+  function exportJSON(){
+    const preview = {
+      color: compositeColor,
+      name: nameFromColor(parseInt(compositeColor.slice(1,3),16), parseInt(compositeColor.slice(3,5),16), parseInt(compositeColor.slice(5,7),16)),
+      timestamp: new Date().toISOString()
+    }
+    const blob = new Blob([JSON.stringify(preview, null, 2)], {type: 'application/json'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'emo-preview.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   function awardEgg(){
     // simulate awarding an egg after solving a prescription
     const eggs = JSON.parse(localStorage.getItem('emo_eggs') || '[]')
