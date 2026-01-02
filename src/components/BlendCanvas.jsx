@@ -559,10 +559,15 @@ export default function BlendCanvas(){
                 const nextLevel = (m.level || 1) + 1
                 const expAfter = (m.exp || 0) - threshold
                 return (
-                  <div style={{display:'flex', gap:12, alignItems:'center'}}>
+                  <div style={{display:'flex', gap:12, alignItems:'flex-start'}}>
                     <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:120}}>
                       <div style={{width:84,height:84,borderRadius:42,background:m.color,border:'2px solid #333',transform: modalPulse ? 'scale(1.06)' : 'scale(1)',transition:'transform 360ms ease'}} />
                       <div style={{fontSize:12,marginTop:8}}>預覽色 / 縮圖</div>
+                      {(m.accessories && m.accessories.length > 0) && (
+                        <div style={{marginTop:8, fontSize:12, fontWeight:'bold'}}>
+                          配件：{m.accessories.map((a, i) => <span key={i}>{a.emoji}</span>)}
+                        </div>
+                      )}
                     </div>
                     <div style={{flex:1}}>
                       <div style={{marginTop:6}}>目前：{m.baseName || m.name} • Level {m.level} • Exp {m.exp}</div>
@@ -570,6 +575,9 @@ export default function BlendCanvas(){
                       <div style={{marginTop:8, padding:8, background:'#fafafa', borderRadius:6}}>
                         預覽：若確認，怪獸將升至 <strong>Level {nextLevel}</strong>{canAuto ? `（自動進化條件已達成，會嘗試進行更多升級）` : ''}
                         <div style={{fontSize:12,color:'#666',marginTop:6}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
+                        {(m.accessories && m.accessories.length > 0) && (
+                          <div style={{fontSize:12,color:'#2e7d32',marginTop:6}}>✓ 已裝備配件將保留</div>
+                        )}
                       </div>
                     </div>
                   </div>
