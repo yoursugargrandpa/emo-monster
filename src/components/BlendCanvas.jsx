@@ -324,12 +324,13 @@ function redraw(imgs){
   }, [elements])
 
   function addEmotionAtCenter(id){
-    const canvas = canvasRef.current
-    if(!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const x = rect.width/2
-    const y = rect.height/2
-    setElements(prev=>[...prev,{id,x,y}])
+    // 直接添加到中心，不需要檢查 canvas
+    console.log('點擊了:', id)
+    setElements(prev => {
+      const newElements = [...prev, {id, x: 320, y: 240}]
+      console.log('新的 elements:', newElements)
+      return newElements
+    })
   }
 
   function exportPNG(){
@@ -693,6 +694,12 @@ function redraw(imgs){
         </div>
       </div>
       <div className="palette">
+        <div style={{marginBottom: 12, padding: 10, background: '#ffcccc', borderRadius: 6}}>
+          <strong>🧪 測試按鈕：</strong>
+          <button onClick={()=>{console.log('按鈕有效!'); setElements(prev=>[...prev,{id:'happy',x:320,y:240}])}} style={{marginLeft: 8}}>
+            點擊添加黃色圓
+          </button>
+        </div>
         {EMOTIONS.map(e=> (
           <div key={e.id} className="emotion-item" onClick={()=>addEmotionAtCenter(e.id)} style={{cursor:'pointer'}}>
             <div style={{fontSize:'48px', cursor:'pointer', transition:'transform 200ms', ':hover': {transform: 'scale(1.1)'}}}>{e.emoji}</div>
