@@ -304,6 +304,12 @@ export default function BlendCanvas(){
 
   function onDragOver(e){ e.preventDefault(); if(!isDragging) setIsDragging(true) }
 
+  useEffect(()=>{
+    if(imagesLoaded && Object.keys(imagesLoaded).length > 0){
+      redraw(imagesLoaded)
+    }
+  }, [elements, imagesLoaded])
+
   function addEmotionAtCenter(id){
     const canvas = canvasRef.current
     if(!canvas) return
