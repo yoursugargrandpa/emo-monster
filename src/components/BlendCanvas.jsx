@@ -251,7 +251,7 @@ export default function BlendCanvas(){
     return ()=> iv && clearInterval(iv)
   }, [isDragging])
 
-  function redraw(imgs){
+function redraw(imgs){
     const canvas = canvasRef.current
     if(!canvas) return
     const ctx = canvas.getContext('2d')
@@ -260,9 +260,23 @@ export default function BlendCanvas(){
     ctx.fillRect(0,0,canvas.width,canvas.height)
     ctx.globalCompositeOperation = 'lighter'
     elements.forEach(el=>{
-      const img = imgs[el.id]
-      if(img) ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
+      // 繪製彩色圓點而不是圖片
+      const emotion = EMOTIONS.find(e => e.id === el.id)
+      if(emotion){
+        // 根據情緒繪製不同顏色
+        let color = '#ff6b6b'  // angry - 紅色
+        if(el.id === 'sad') color = '#4ecdc4'  // sad - 青色
+        if(el.id === 'happy') color = '#ffd93d'  // happy - 黃色
+        
+        ctx.fillStyle = color
+        ctx.beginPath()
+        ctx.arc(el.x, el.y, 20, 0, Math.PI * 2)
+        ctx.fill()
+      }
     })
+    ctx.globalCompositeOperation = 'source-over'
+  }
+
     ctx.globalCompositeOperation = 'source-over'
   }
 
