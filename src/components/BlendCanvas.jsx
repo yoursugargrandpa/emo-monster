@@ -537,14 +537,17 @@ export default function BlendCanvas(){
 
   return (
     <div className="blend-wrap">
-      <div className="canvas-area" style={{position:'relative'}}>
+      <div 
+        className="canvas-area" 
+        style={{position:'relative'}}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+      >
         <canvas
           ref={canvasRef}
           width={640}
           height={480}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          style={{border: '1px solid #ccc', background: '#fff'}}
+          style={{border: '1px solid #ccc', background: '#fff', cursor:'crosshair', display:'block'}}
         />
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
