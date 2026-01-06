@@ -672,7 +672,7 @@ export default function BlendCanvas(){
       <div className="palette">
         {EMOTIONS.map(e=> (
           <div key={e.id} className="emotion-item">
-            <img src={e.src} draggable onDragStart={(ev)=>onDragStart(ev,e.id)} alt={e.name} width={64} height={64} />
+            <img src={e.src} draggable onDragStart={(ev)=>onDragStart(ev,e.id)} alt={e.name} width={64} height={64} style={{display:'block', margin:'0 auto'}} />
             <div>{e.name}</div>
           </div>
         ))}
