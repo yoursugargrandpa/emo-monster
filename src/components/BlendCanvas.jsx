@@ -2,9 +2,9 @@ import React, {useRef, useEffect, useState} from 'react'
 import {hexFromRGB, nameFromColor} from '../utils.js'
 
 const EMOTIONS = [
-  {id: 'angry', name: '生氣', src: '/assets/emotions/angry.png'},
-  {id: 'sad', name: '難過', src: '/assets/emotions/sad.png'},
-  {id: 'happy', name: '快樂', src: '/assets/emotions/happy.png'}
+  {id: 'angry', name: '生氣', src: './assets/emotions/angry.png'},
+  {id: 'sad', name: '難過', src: './assets/emotions/sad.png'},
+  {id: 'happy', name: '快樂', src: './assets/emotions/happy.png'}
 ]
 
 const SHOP_ITEMS = [
