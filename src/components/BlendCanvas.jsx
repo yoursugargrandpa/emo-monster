@@ -694,8 +694,8 @@ function redraw(imgs){
       </div>
       <div className="palette">
         {EMOTIONS.map(e=> (
-          <div key={e.id} className="emotion-item" draggable onDragStart={(ev)=>onDragStart(ev,e.id)}>
-            <div style={{fontSize:'48px', cursor:'grab'}}>{e.emoji}</div>
+          <div key={e.id} className="emotion-item" onClick={()=>addEmotionAtCenter(e.id)} style={{cursor:'pointer'}}>
+            <div style={{fontSize:'48px', cursor:'pointer', transition:'transform 200ms', ':hover': {transform: 'scale(1.1)'}}}>{e.emoji}</div>
             <div>{e.name}</div>
           </div>
         ))}
