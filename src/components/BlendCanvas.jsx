@@ -2,9 +2,9 @@ import React, {useRef, useEffect, useState} from 'react'
 import {hexFromRGB, nameFromColor} from '../utils.js'
 
 const EMOTIONS = [
-  {id: 'angry', name: '生氣', src: './assets/emotions/angry.png'},
-  {id: 'sad', name: '難過', src: './assets/emotions/sad.png'},
-  {id: 'happy', name: '快樂', src: './assets/emotions/happy.png'}
+  {id: 'angry', name: '生氣', src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAACp8GOEAAAAL0lEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4G8B1QABn3Vw3wAAAABJRU5ErkJggg=='},
+  {id: 'sad', name: '難過', src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAACp8GOEAAAAL0lEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4G8B1QABn3Vw3wAAAABJRU5ErkJggg=='},
+  {id: 'happy', name: '快樂', src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAACp8GOEAAAAL0lEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4G8B1QABn3Vw3wAAAABJRU5ErkJggg=='}
 ]
 
 const SHOP_ITEMS = [
