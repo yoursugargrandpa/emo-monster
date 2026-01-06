@@ -251,7 +251,7 @@ export default function BlendCanvas(){
     return ()=> iv && clearInterval(iv)
   }, [isDragging])
 
-function redraw(imgs){
+  function redraw(imgs){
     const canvas = canvasRef.current
     if(!canvas) return
     const ctx = canvas.getContext('2d')
@@ -260,23 +260,9 @@ function redraw(imgs){
     ctx.fillRect(0,0,canvas.width,canvas.height)
     ctx.globalCompositeOperation = 'lighter'
     elements.forEach(el=>{
-      // 繪製彩色圓點而不是圖片
-      const emotion = EMOTIONS.find(e => e.id === el.id)
-      if(emotion){
-        // 根據情緒繪製不同顏色
-        let color = '#ff6b6b'  // angry - 紅色
-        if(el.id === 'sad') color = '#4ecdc4'  // sad - 青色
-        if(el.id === 'happy') color = '#ffd93d'  // happy - 黃色
-        
-        ctx.fillStyle = color
-        ctx.beginPath()
-        ctx.arc(el.x, el.y, 20, 0, Math.PI * 2)
-        ctx.fill()
-      }
+      const img = imgs[el.id]
+      if(img) ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
     })
-    ctx.globalCompositeOperation = 'source-over'
-  }
-
     ctx.globalCompositeOperation = 'source-over'
   }
 
@@ -318,19 +304,13 @@ function redraw(imgs){
 
   function onDragOver(e){ e.preventDefault(); if(!isDragging) setIsDragging(true) }
 
-  useEffect(()=>{
-    // 只要 elements 改變就重繪（不管 imagesLoaded）
-    redraw({})
-  }, [elements])
-
   function addEmotionAtCenter(id){
-    // 直接添加到中心，不需要檢查 canvas
-    console.log('點擊了:', id)
-    setElements(prev => {
-      const newElements = [...prev, {id, x: 320, y: 240}]
-      console.log('新的 elements:', newElements)
-      return newElements
-    })
+    const canvas = canvasRef.current
+    if(!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = rect.width/2
+    const y = rect.height/2
+    setElements(prev=>[...prev,{id,x,y}])
   }
 
   function exportPNG(){
@@ -557,17 +537,14 @@ function redraw(imgs){
 
   return (
     <div className="blend-wrap">
-      <div 
-        className="canvas-area" 
-        style={{position:'relative'}}
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-      >
+      <div className="canvas-area" style={{position:'relative'}}>
         <canvas
           ref={canvasRef}
           width={640}
           height={480}
-          style={{border: '1px solid #ccc', background: '#fff', cursor:'crosshair', display:'block'}}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          style={{border: '1px solid #ccc', background: '#fff'}}
         />
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
@@ -694,15 +671,9 @@ function redraw(imgs){
         </div>
       </div>
       <div className="palette">
-        <div style={{marginBottom: 12, padding: 10, background: '#ffcccc', borderRadius: 6}}>
-          <strong>🧪 測試按鈕：</strong>
-          <button onClick={()=>{console.log('按鈕有效!'); setElements(prev=>[...prev,{id:'happy',x:320,y:240}])}} style={{marginLeft: 8}}>
-            點擊添加黃色圓
-          </button>
-        </div>
         {EMOTIONS.map(e=> (
-          <div key={e.id} className="emotion-item" onClick={()=>addEmotionAtCenter(e.id)} style={{cursor:'pointer'}}>
-            <div style={{fontSize:'48px', cursor:'pointer', transition:'transform 200ms', ':hover': {transform: 'scale(1.1)'}}}>{e.emoji}</div>
+          <div key={e.id} className="emotion-item" draggable onDragStart={(ev)=>onDragStart(ev,e.id)}>
+            <div style={{fontSize:'48px', cursor:'grab'}}>{e.emoji}</div>
             <div>{e.name}</div>
           </div>
         ))}
