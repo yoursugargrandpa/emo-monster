@@ -319,10 +319,9 @@ function redraw(imgs){
   function onDragOver(e){ e.preventDefault(); if(!isDragging) setIsDragging(true) }
 
   useEffect(()=>{
-    if(imagesLoaded && Object.keys(imagesLoaded).length > 0){
-      redraw(imagesLoaded)
-    }
-  }, [elements, imagesLoaded])
+    // 只要 elements 改變就重繪（不管 imagesLoaded）
+    redraw({})
+  }, [elements])
 
   function addEmotionAtCenter(id){
     const canvas = canvasRef.current
