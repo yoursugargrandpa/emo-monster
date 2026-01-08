@@ -224,6 +224,15 @@ export default function BlendCanvas(){
     computeCompositeColor()
   }, [elements, imagesLoaded])
 
+  // 監聽主題變化並重繪
+  useEffect(()=>{
+    const observer = new MutationObserver(() => {
+      redraw(imagesLoaded, elements)
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [imagesLoaded, elements])
+
   useEffect(()=>{
     // trigger animation when preview key changes
     setAnimatePreview(true)
@@ -255,9 +264,13 @@ export default function BlendCanvas(){
     const canvas = canvasRef.current
     if(!canvas) return
     const ctx = canvas.getContext('2d')
+    
+    // 根據主題設置背景色
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
     ctx.clearRect(0,0,canvas.width,canvas.height)
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = isDark ? '#2d3436' : '#ffffff'
     ctx.fillRect(0,0,canvas.width,canvas.height)
+    
     ctx.globalCompositeOperation = 'lighter'
     const itemsToRender = elemsToUse || elements
     itemsToRender.forEach(el=>{
@@ -560,7 +573,7 @@ export default function BlendCanvas(){
           height={480}
           onDrop={onDrop}
           onDragOver={onDragOver}
-          style={{border: '1px solid #ccc', background: '#fff'}}
+          style={{border: '1px solid var(--border)', background: 'var(--bg-light)'}}
         />
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
