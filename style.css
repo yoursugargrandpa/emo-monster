@@ -1,0 +1,27 @@
+:root {
+  --primary: #ff6b6b;
+  --secondary: #4ecdc4;
+  --accent: #ffd93d;
+  --bg-light: #f8f9fa;
+  --bg-dark: #2d3436;
+  --text-dark: #2d3436;
+  --border: #e0e0e0;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto'; }
+body { overflow: hidden; }
+#root { height: 100%; }
+
+.app { padding: 16px; height: 100%; display: flex; flex-direction: column; background: var(--bg-light); }
+.app h1 { margin: 0 0 16px 0; font-size: 28px; }
+canvas { border: 1px solid var(--border); background: #fff; cursor: crosshair; }
+button { padding: 8px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; background: var(--primary); color: white; transition: all 0.15s; }
+button:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
+.palette { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.emotion-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; background: white; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; flex: 0 0 auto; }
+.emotion-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+.emotion-item div:first-child { font-size: 48px; cursor: grab; }
