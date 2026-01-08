@@ -1,6 +1,57 @@
 import React, {useState, useEffect} from 'react'
 import BlendCanvas from './components/BlendCanvas'
 
+function LogoSettings({isDarkMode}){
+  const [isOpen, setIsOpen] = useState(false)
+  const [customEmoji, setCustomEmoji] = useState(() => localStorage.getItem('emo_logo_emoji') || '🎨')
+  const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('emo_logo_title') || '情感怪獸 Emo Monster')
+
+  const saveSettings = () => {
+    localStorage.setItem('emo_logo_emoji', customEmoji)
+    localStorage.setItem('emo_logo_title', customTitle)
+    setIsOpen(false)
+  }
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)} style={{padding: '6px 12px', fontSize: '12px', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '600'}}>
+        ⚙️ Logo 設定
+      </button>
+      {isOpen && (
+        <div style={{position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', zIndex: 1000}}>
+          <div style={{background: isDarkMode ? 'var(--bg-light)' : '#fff', padding: '24px', borderRadius: 'var(--radius-lg)', width: '90%', maxWidth: '400px', boxShadow: 'var(--shadow-lg)'}}>
+            <h3 style={{margin: '0 0 16px 0', color: 'var(--primary)'}}>自訂 Logo</h3>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '8px'}}>Logo Emoji（單個字符）</label>
+              <input 
+                type="text" 
+                value={customEmoji} 
+                onChange={(e) => setCustomEmoji(e.target.value.slice(0, 2))} 
+                style={{width: '100%', padding: '8px', fontSize: '18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)'}}
+              />
+              <div style={{marginTop: '8px', fontSize: '32px'}}>預覽：{customEmoji}</div>
+            </div>
+            <div style={{marginBottom: '16px'}}>
+              <label style={{display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '8px'}}>應用標題</label>
+              <input 
+                type="text" 
+                value={customTitle} 
+                onChange={(e) => setCustomTitle(e.target.value)} 
+                maxLength="50"
+                style={{width: '100%', padding: '8px', fontSize: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)'}}
+              />
+            </div>
+            <div style={{display: 'flex', gap: '8px', justifyContent: 'flex-end'}}>
+              <button onClick={() => setIsOpen(false)} style={{padding: '8px 16px', background: 'var(--border)', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer'}}>取消</button>
+              <button onClick={saveSettings} style={{padding: '8px 16px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer'}}>保存</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 function HistoryCalendar(){
   const [byDate, setByDate] = useState({})
   const [dates, setDates] = useState([])
@@ -117,12 +168,18 @@ function HistoryCalendar(){
 
 export default function App(){
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [customEmoji, setCustomEmoji] = useState('🎨')
+  const [customTitle, setCustomTitle] = useState('情感怪獸 Emo Monster')
 
   useEffect(() => {
     const saved = localStorage.getItem('emo_theme') || 'light'
     const isDark = saved === 'dark'
     setIsDarkMode(isDark)
     applyTheme(saved)
+    
+    // Load custom branding
+    setCustomEmoji(localStorage.getItem('emo_logo_emoji') || '🎨')
+    setCustomTitle(localStorage.getItem('emo_logo_title') || '情感怪獸 Emo Monster')
   }, [])
 
   const applyTheme = (theme) => {
@@ -137,13 +194,28 @@ export default function App(){
     applyTheme(newTheme)
   }
 
+  // Listen for logo changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCustomEmoji(localStorage.getItem('emo_logo_emoji') || '🎨')
+      setCustomTitle(localStorage.getItem('emo_logo_title') || '情感怪獸 Emo Monster')
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
+
   return (
     <div className="app">
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 'var(--spacing-lg)'}}>
-        <h1>🎨 情感怪獸 Emo Monster</h1>
-        <button onClick={toggleDarkMode} style={{padding: '8px 16px', background: 'var(--secondary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: '14px', fontWeight: '600', transition: 'all var(--transition-normal)'}}>
-          {isDarkMode ? '☀️ 亮色模式' : '🌙 黑暗模式'}
-        </button>
+        <h1 style={{fontSize: '28px', margin: 0}}>
+          <span style={{fontSize: '32px', marginRight: '8px'}}>{customEmoji}</span> {customTitle}
+        </h1>
+        <div style={{display: 'flex', gap: '8px'}}>
+          <LogoSettings isDarkMode={isDarkMode} />
+          <button onClick={toggleDarkMode} style={{padding: '8px 16px', background: 'var(--secondary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: '14px', fontWeight: '600', transition: 'all var(--transition-normal)'}}>
+            {isDarkMode ? '☀️ 亮色模式' : '🌙 黑暗模式'}
+          </button>
+        </div>
       </div>
       <div style={{flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
         <BlendCanvas />
