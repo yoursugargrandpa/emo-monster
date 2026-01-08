@@ -259,30 +259,70 @@ button {
   white-space: nowrap;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   background: #ff5252;
 }
 
-button:active {
+button:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
 
 button:disabled {
-  background: #cccccc;
+  background: var(--border);
+  color: #999;
   cursor: not-allowed;
   transform: none;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
-button:nth-child(even) {
+/* 按鈕變體 */
+.btn-secondary {
   background: var(--secondary);
+  color: white;
 }
 
-button:nth-child(even):hover {
+.btn-secondary:hover:not(:disabled) {
   background: #45b8b0;
+}
+
+.btn-success {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.btn-danger {
+  background: #f44336;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #da190b;
+}
+
+.btn-small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 12px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-icon:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: none;
 }
 
 /* 標籤 */

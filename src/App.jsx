@@ -14,7 +14,7 @@ function LogoSettings({isDarkMode}){
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)} style={{padding: '6px 12px', fontSize: '12px', background: 'var(--accent)', color: '#000', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '600'}}>
+      <button onClick={() => setIsOpen(true)} className="btn-secondary" style={{fontSize: '12px', padding: '6px 12px'}}>
         ⚙️ Logo 設定
       </button>
       {isOpen && (
@@ -42,8 +42,8 @@ function LogoSettings({isDarkMode}){
               />
             </div>
             <div style={{display: 'flex', gap: '8px', justifyContent: 'flex-end'}}>
-              <button onClick={() => setIsOpen(false)} style={{padding: '8px 16px', background: 'var(--border)', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer'}}>取消</button>
-              <button onClick={saveSettings} style={{padding: '8px 16px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer'}}>保存</button>
+              <button onClick={() => setIsOpen(false)} className="btn-secondary">取消</button>
+              <button onClick={saveSettings}>保存</button>
             </div>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function App(){
         </h1>
         <div style={{display: 'flex', gap: '8px'}}>
           <LogoSettings isDarkMode={isDarkMode} />
-          <button onClick={toggleDarkMode} style={{padding: '8px 16px', background: 'var(--secondary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: '14px', fontWeight: '600', transition: 'all var(--transition-normal)'}}>
+          <button onClick={toggleDarkMode} className="btn-secondary">
             {isDarkMode ? '☀️ 亮色模式' : '🌙 黑暗模式'}
           </button>
         </div>

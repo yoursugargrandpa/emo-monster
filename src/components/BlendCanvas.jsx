@@ -600,8 +600,8 @@ export default function BlendCanvas(){
                 )
               })()}
 
-              <div style={{marginTop:12, display:'flex', justifyContent:'flex-end'}}>
-                <button onClick={()=>setEvolveModalVisible(false)} style={{marginRight:8}} disabled={evolveAnimating}>取消</button>
+              <div style={{marginTop:12, display:'flex', justifyContent:'flex-end', gap: '8px'}}>
+                <button onClick={()=>setEvolveModalVisible(false)} className="btn-secondary" disabled={evolveAnimating}>取消</button>
                 <button onClick={confirmEvolve} disabled={evolveAnimating}>確認進化</button>
               </div>
             </div>
@@ -609,10 +609,10 @@ export default function BlendCanvas(){
         )}
         {shopVisible && (
           <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.5)', zIndex:10}}>
-            <div style={{background:'#fff', padding:20, borderRadius:12, maxWidth:700, maxHeight:'80vh', overflowY:'auto', boxShadow:'0 10px 40px rgba(0,0,0,0.3)'}}>
+            <div style={{background:'var(--bg-light)', padding:20, borderRadius:12, maxWidth:700, maxHeight:'80vh', overflowY:'auto', boxShadow:'0 10px 40px rgba(0,0,0,0.3)'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
                 <h2>🛍️ 商店</h2>
-                <button onClick={()=>setShopVisible(false)} style={{fontSize:20, border:'none', background:'none', cursor:'pointer'}}>✕</button>
+                <button onClick={()=>setShopVisible(false)} className="btn-icon">✕</button>
               </div>
               
               <div style={{marginBottom:16, padding:12, background:'#fffde7', borderRadius:8}}>
@@ -626,7 +626,7 @@ export default function BlendCanvas(){
                     <div style={{fontSize:32, marginBottom:8}}>{item.emoji}</div>
                     <div style={{fontWeight:'bold', marginBottom:6}}>{item.name}</div>
                     <div style={{fontSize:12, color:'#666', marginBottom:8}}>💰 {item.cost}</div>
-                    <button onClick={()=>buyItem(item)} style={{width:'100%', padding:'6px 8px', background:coins>=item.cost?'#4caf50':'#ccc', color:'#fff', border:'none', borderRadius:4, cursor:coins>=item.cost?'pointer':'not-allowed'}}>購買</button>
+                    <button onClick={()=>buyItem(item)} className="btn-success" style={{width:'100%', marginTop: '8px'}} disabled={coins < item.cost}>購買</button>
                   </div>
                 ))}
               </div>
@@ -640,14 +640,14 @@ export default function BlendCanvas(){
                     <div key={item.iid} style={{border:'1px solid #bbb', borderRadius:8, padding:12, background:'#e8f5e9', textAlign:'center'}}>
                       <div style={{fontSize:28, marginBottom:6}}>{item.emoji}</div>
                       <div style={{fontWeight:'bold', fontSize:12, marginBottom:8}}>{item.name}</div>
-                      <button onClick={()=>removeItemFromInventory(item.iid)} style={{width:'100%', padding:'4px 6px', fontSize:11, background:'#f44336', color:'#fff', border:'none', borderRadius:4, cursor:'pointer'}}>丟棄</button>
+                      <button onClick={()=>removeItemFromInventory(item.iid)} className="btn-danger btn-small" style={{width:'100%'}}>丟棄</button>
                     </div>
                   ))}
                 </div>
               )}
 
               <div style={{marginTop:16, display:'flex', justifyContent:'flex-end'}}>
-                <button onClick={()=>setShopVisible(false)} style={{padding:'8px 16px', fontSize:14}}>關閉</button>
+                <button onClick={()=>setShopVisible(false)} className="btn-secondary">關閉</button>
               </div>
             </div>
           </div>
@@ -670,20 +670,20 @@ export default function BlendCanvas(){
         <div style={{marginTop:8}}>
           當前合成色： <span style={{display:'inline-block',width:24,height:24,background:compositeColor,border:'1px solid #333',verticalAlign:'middle'}} /> {compositeColor}
         </div>
-        <div style={{marginTop:8, padding:10, background:'#fffde7', borderRadius:6, display:'flex', alignItems:'center', gap:12}}>
+        <div style={{marginTop:8, padding:10, background:'#fffde7', borderRadius:6, display:'flex', alignItems:'center', gap:12, flexWrap: 'wrap'}}>
           <span style={{fontSize:18}}>💰</span>
           <strong>金幣：{coins}</strong>
-          <button onClick={earnChallenge} style={{marginLeft:8, padding:'4px 12px'}}>完成挑戰 +10</button>
-          <button onClick={()=>setShopVisible(true)} style={{marginLeft:8, padding:'4px 12px'}}>🛍️ 進入商店</button>
+          <button onClick={earnChallenge} className="btn-success" style={{marginLeft:'auto'}}>完成挑戰 +10</button>
+          <button onClick={()=>setShopVisible(true)} className="btn-secondary">🛍️ 進入商店</button>
         </div>
-        <div style={{marginTop:8}}>
+        <div style={{marginTop:8, display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
           <button onClick={awardEgg}>獲得情緒蛋（模擬）</button>
-          <button onClick={hatchEgg} style={{marginLeft:8}}>孵化情緒蛋</button>
-          <button onClick={exportPNG} style={{marginLeft:8}}>匯出 PNG</button>
-          <button onClick={exportJSON} style={{marginLeft:8}}>匯出 JSON</button>
-          <button onClick={exportSVG} style={{marginLeft:8}}>匯出 SVG</button>
-          <button onClick={exportBundle} style={{marginLeft:8}}>匯出 Bundle</button>
-          <button onClick={shareMonster} style={{marginLeft:8}}>📤 分享怪獸</button>
+          <button onClick={hatchEgg} className="btn-secondary">孵化情緒蛋</button>
+          <button onClick={exportPNG} className="btn-secondary">匯出 PNG</button>
+          <button onClick={exportJSON}>匯出 JSON</button>
+          <button onClick={exportSVG}>匯出 SVG</button>
+          <button onClick={exportBundle}>匯出 Bundle</button>
+          <button onClick={shareMonster} className="btn-success">📤 分享怪獸</button>
         </div>
       </div>
       <div className="palette">
@@ -699,7 +699,7 @@ export default function BlendCanvas(){
         <div style={{marginTop:8}}>
           情緒蛋：{eggs.length}
           {eggs.length>0 && (
-            <button onClick={hatchAll} style={{marginLeft:8}}>孵化全部</button>
+            <button onClick={hatchAll} className="btn-secondary" style={{marginLeft:8}}>孵化全部</button>
           )}
           <div style={{marginTop:6}}>
             {eggs.map(e=> (
@@ -760,7 +760,7 @@ export default function BlendCanvas(){
             <label style={{fontSize:12}}>進化門檻基數:
               <input type="number" value={settings.evoBase} onChange={(ev)=>{ const v=parseInt(ev.target.value)||0; const s2={...settings,evoBase:v}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{width:68, marginLeft:8}} />
             </label>
-            <button onClick={()=>{ const s2={particleCount:18,particleSize:6,volume:0.18,evoBase:5}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} style={{marginLeft:8}}>重置</button>
+            <button onClick={()=>{ const s2={particleCount:18,particleSize:6,volume:0.18,evoBase:5}; setSettings(s2); localStorage.setItem('emo_settings', JSON.stringify(s2))}} className="btn-secondary" style={{marginLeft:8}}>重置</button>
           </div>
         </div>
         <div style={{marginTop:12}}>
@@ -774,7 +774,7 @@ export default function BlendCanvas(){
               怪
             </div>
           </div>
-          <div style={{marginTop:8}}>預覽怪獸（簡單程式化） <button onClick={evolveLastMonster} style={{marginLeft:8}}>進化最近孵化的怪獸</button></div>
+          <div style={{marginTop:8}}>預覽怪獸（簡單程式化） <button onClick={evolveLastMonster} className="btn-success" style={{marginLeft:8}}>進化最近孵化的怪獸</button></div>
         </div>
       </div>
     </div>
