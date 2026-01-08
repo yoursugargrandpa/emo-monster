@@ -220,7 +220,7 @@ export default function BlendCanvas(){
   }, [])
 
   useEffect(()=>{
-    redraw(imagesLoaded)
+    redraw(imagesLoaded, elements)
     computeCompositeColor()
   }, [elements, imagesLoaded])
 
@@ -251,7 +251,7 @@ export default function BlendCanvas(){
     return ()=> iv && clearInterval(iv)
   }, [isDragging])
 
-  function redraw(imgs){
+  function redraw(imgs, elemsToUse){
     const canvas = canvasRef.current
     if(!canvas) return
     const ctx = canvas.getContext('2d')
@@ -259,7 +259,8 @@ export default function BlendCanvas(){
     ctx.fillStyle = '#ffffff'
     ctx.fillRect(0,0,canvas.width,canvas.height)
     ctx.globalCompositeOperation = 'lighter'
-    elements.forEach(el=>{
+    const itemsToRender = elemsToUse || elements
+    itemsToRender.forEach(el=>{
       const img = imgs[el.id]
       if(img) ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
     })
