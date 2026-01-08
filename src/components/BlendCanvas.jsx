@@ -321,11 +321,19 @@ export default function BlendCanvas(){
 
   function addEmotionAtCenter(id){
     const canvas = canvasRef.current
-    if(!canvas) return
+    if(!canvas) {
+      console.error('Canvas ref not available')
+      return
+    }
     const rect = canvas.getBoundingClientRect()
     const x = rect.width/2
     const y = rect.height/2
-    setElements(prev=>[...prev,{id,x,y}])
+    console.log('Adding emotion:', id, 'at', x, y)
+    setElements(prev=>{
+      const newElems = [...prev, {id, x, y}]
+      console.log('Elements updated:', newElems.length)
+      return newElems
+    })
   }
 
   function exportPNG(){
