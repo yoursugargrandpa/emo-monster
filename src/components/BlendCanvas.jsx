@@ -564,7 +564,7 @@ export default function BlendCanvas(){
         <canvas ref={particleRef} width={640} height={480} style={{position:'absolute', left:0, top:0, pointerEvents:'none'}} />
         {evolveModalVisible && (
           <div style={{position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,0.4)', zIndex:100}}>
-            <div style={{background:'#fff', padding:16, borderRadius:8, width:360, boxShadow:'0 10px 30px rgba(0,0,0,0.3)', transform: evolveAnimating ? 'scale(0.95)' : 'scale(1)', transition:'transform 600ms cubic-bezier(.2,.9,.3,1)', opacity: evolveAnimating ? 0.6 : 1}}>
+            <div style={{background:'var(--bg-light)', padding:16, borderRadius:8, width:360, boxShadow:'0 10px 30px rgba(0,0,0,0.3)', transform: evolveAnimating ? 'scale(0.95)' : 'scale(1)', transition:'transform 600ms cubic-bezier(.2,.9,.3,1)', opacity: evolveAnimating ? 0.6 : 1, color: 'var(--text-dark)'}}>
               <h3>進化確認</h3>
               {(() => {
                 const mons = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
@@ -588,9 +588,9 @@ export default function BlendCanvas(){
                     <div style={{flex:1}}>
                       <div style={{marginTop:6}}>目前：{m.baseName || m.name} • Level {m.level} • Exp {m.exp}</div>
                       <div style={{marginTop:6}}>升級門檻：{threshold} exp</div>
-                      <div style={{marginTop:8, padding:8, background:'#fafafa', borderRadius:6}}>
+                      <div style={{marginTop:8, padding:8, background:'var(--border)', borderRadius:6}}>
                         預覽：若確認，怪獸將升至 <strong>Level {nextLevel}</strong>{canAuto ? `（自動進化條件已達成，會嘗試進行更多升級）` : ''}
-                        <div style={{fontSize:12,color:'#666',marginTop:6}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
+                        <div style={{fontSize:12,color:'var(--text-dark)',marginTop:6, opacity: 0.8}}>升級後剩餘 Exp: {expAfter > 0 ? expAfter : 0}</div>
                         {(m.accessories && m.accessories.length > 0) && (
                           <div style={{fontSize:12,color:'#2e7d32',marginTop:6}}>✓ 已裝備配件將保留</div>
                         )}
@@ -615,14 +615,14 @@ export default function BlendCanvas(){
                 <button onClick={()=>setShopVisible(false)} className="btn-icon">✕</button>
               </div>
               
-              <div style={{marginBottom:16, padding:12, background:'#fffde7', borderRadius:8}}>
+              <div style={{marginBottom:16, padding:12, background:'var(--accent)', borderRadius:8}}>
                 <strong style={{fontSize:18}}>💰 你的金幣：{coins}</strong>
               </div>
 
               <h3 style={{marginTop:16, marginBottom:12}}>📦 商品列表</h3>
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(140px, 1fr))', gap:12, marginBottom:20}}>
                 {SHOP_ITEMS.map(item => (
-                  <div key={item.id} style={{border:'1px solid #ddd', borderRadius:8, padding:12, textAlign:'center', background:'#fafafa', transition:'all 200ms ease', cursor:'pointer'}} onMouseEnter={(e)=>e.currentTarget.style.transform='scale(1.05)'} onMouseLeave={(e)=>e.currentTarget.style.transform='scale(1)'}>
+                  <div key={item.id} style={{border:'1px solid var(--border)', borderRadius:8, padding:12, textAlign:'center', background:'var(--bg-light)', transition:'all 200ms ease', cursor:'pointer'}} onMouseEnter={(e)=>e.currentTarget.style.transform='scale(1.05)'} onMouseLeave={(e)=>e.currentTarget.style.transform='scale(1)'}>
                     <div style={{fontSize:32, marginBottom:8}}>{item.emoji}</div>
                     <div style={{fontWeight:'bold', marginBottom:6}}>{item.name}</div>
                     <div style={{fontSize:12, color:'#666', marginBottom:8}}>💰 {item.cost}</div>
@@ -637,7 +637,7 @@ export default function BlendCanvas(){
               ) : (
                 <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(120px, 1fr))', gap:12}}>
                   {inventory.map(item => (
-                    <div key={item.iid} style={{border:'1px solid #bbb', borderRadius:8, padding:12, background:'#e8f5e9', textAlign:'center'}}>
+                    <div key={item.iid} style={{border:'1px solid var(--border)', borderRadius:8, padding:12, background:'var(--bg-light)', textAlign:'center'}}>
                       <div style={{fontSize:28, marginBottom:6}}>{item.emoji}</div>
                       <div style={{fontWeight:'bold', fontSize:12, marginBottom:8}}>{item.name}</div>
                       <button onClick={()=>removeItemFromInventory(item.iid)} className="btn-danger btn-small" style={{width:'100%'}}>丟棄</button>
@@ -710,17 +710,17 @@ export default function BlendCanvas(){
           </div>
         </div>
 
-        <div style={{marginTop:12, padding:10, background:'#e3f2fd', borderRadius:8}}>
+        <div style={{marginTop:12, padding:10, background:'var(--bg-light)', borderRadius:8, border: '1px solid var(--secondary)'}}>
           <strong>🎖️ 怪獸配件</strong>
           <div style={{marginTop:8, maxHeight:200, overflowY:'auto'}}>
             {(() => {
               try {
                 const mons = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
-                if(mons.length === 0) return <div style={{fontSize:12, color:'#666'}}>暫無怪獸</div>
+                if(mons.length === 0) return <div style={{fontSize:12, color:'var(--text-dark)', opacity: 0.6}}>暫無怪獸</div>
                 return (
                   <div style={{display:'flex', flexDirection:'column', gap:8}}>
                     {mons.map(m => (
-                      <div key={m.id} style={{padding:8, background:'#fff', borderRadius:6, border:'1px solid #90caf9'}}>
+                      <div key={m.id} style={{padding:8, background:'var(--border)', borderRadius:6, border:`1px solid var(--secondary)`}}>
                         <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:4}}>
                           <span style={{display:'inline-block',width:20,height:20,borderRadius:10,background:m.color,border:'1px solid #333'}} />
                           <strong style={{fontSize:12}}>{m.name}</strong>
@@ -732,7 +732,7 @@ export default function BlendCanvas(){
                             ))}
                           </div>
                         ) : (
-                          <div style={{fontSize:11, color:'#999'}}>無配件</div>
+                          <div style={{fontSize:11, color:'var(--text-dark)', opacity: 0.6}}>無配件</div>
                         )}
                       </div>
                     ))}
@@ -745,7 +745,7 @@ export default function BlendCanvas(){
 
       </div>
       <div className="controls">
-        <div style={{marginBottom:12, padding:10, border:'1px solid #eee', borderRadius:8, background:'#fff'}}>
+        <div style={{marginBottom:12, padding:10, border:'1px solid var(--border)', borderRadius:8, background:'var(--bg-light)'}}>
           <strong>視覺與音效設定（醒目）</strong>
           <div style={{marginTop:8,display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
             <label style={{fontSize:12}}>粒子數量:
