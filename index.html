@@ -1,19 +1,42 @@
 <!doctype html>
 <html lang="zh-TW">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="情感怪獸 - 用色彩表達情感，孵化獨特的怪獸。" />
     <meta name="theme-color" content="#667eea" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Emo Monster" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>" />
     <title>情感怪獸 - Emo Monster</title>
-    <script type="module" crossorigin src="/emo-monster/assets/index-Dn1vdC-b.js"></script>
-    <link rel="stylesheet" crossorigin href="/emo-monster/assets/index-D6o3zcmP.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 情感怪獸 Emo Monster</h1>
+        </header>
+        
+        <main>
+            <canvas id="canvas" width="640" height="480"></canvas>
+            
+            <div class="controls">
+                <div class="palette">
+                    <button class="emotion-btn" data-emotion="angry" data-color="#ff6b6b">😠 生氣</button>
+                    <button class="emotion-btn" data-emotion="sad" data-color="#6bcaff">😢 難過</button>
+                    <button class="emotion-btn" data-emotion="happy" data-color="#ffd93d">😊 快樂</button>
+                </div>
+                
+                <div class="button-group">
+                    <button id="exportBtn" class="btn-primary">📥 匯出 PNG</button>
+                    <button id="clearBtn" class="btn-secondary">🔄 清除</button>
+                </div>
+                
+                <div class="info">
+                    <p>已添加的顏色：<span id="count">0</span> 個</p>
+                    <p>當前色彩：<span id="color">#ffffff</span></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
 </html>
