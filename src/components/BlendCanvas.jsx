@@ -2,9 +2,9 @@ import React, {useRef, useEffect, useState} from 'react'
 import {hexFromRGB, nameFromColor} from '../utils.js'
 
 const EMOTIONS = [
-  {id: 'angry', name: '生氣', emoji: '😠', src: '/emo-monster/assets/emotions/angry.png'},
-  {id: 'sad', name: '難過', emoji: '😢', src: '/emo-monster/assets/emotions/sad.png'},
-  {id: 'happy', name: '快樂', emoji: '😊', src: '/emo-monster/assets/emotions/happy.png'}
+  {id: 'angry', name: '生氣', emoji: '😠', src: 'assets/emotions/angry.png'},
+  {id: 'sad', name: '難過', emoji: '😢', src: 'assets/emotions/sad.png'},
+  {id: 'happy', name: '快樂', emoji: '😊', src: 'assets/emotions/happy.png'}
 ]
 
 
@@ -262,12 +262,8 @@ export default function BlendCanvas(){
 
   function redraw(imgs, elemsToUse){
     const canvas = canvasRef.current
-    if(!canvas) {
-      console.warn('[redraw] Canvas not available')
-      return
-    }
+    if(!canvas) return
     const ctx = canvas.getContext('2d')
-    console.log('[redraw] Drawing', elemsToUse?.length || 0, 'elements with', Object.keys(imgs).length, 'images loaded')
     
     // 根據主題設置背景色
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
@@ -279,12 +275,7 @@ export default function BlendCanvas(){
     const itemsToRender = elemsToUse || elements
     itemsToRender.forEach(el=>{
       const img = imgs[el.id]
-      if(img) {
-        console.log('[redraw] Drawing image for emotion:', el.id, 'size:', img.width, 'x', img.height)
-        ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
-      } else {
-        console.warn('[redraw] Missing image for emotion:', el.id)
-      }
+      if(img) ctx.drawImage(img, el.x - img.width/2, el.y - img.height/2)
     })
     ctx.globalCompositeOperation = 'source-over'
   }
@@ -329,19 +320,11 @@ export default function BlendCanvas(){
 
   function addEmotionAtCenter(id){
     const canvas = canvasRef.current
-    if(!canvas) {
-      console.warn('[addEmotionAtCenter] Canvas not available')
-      return
-    }
+    if(!canvas) return
     const rect = canvas.getBoundingClientRect()
     const x = rect.width/2
     const y = rect.height/2
-    console.log('[addEmotionAtCenter] Adding emotion:', id, 'at', x, y)
-    setElements(prev=>{
-      const newElements = [...prev,{id,x,y}]
-      console.log('[addEmotionAtCenter] New elements:', newElements)
-      return newElements
-    })
+    setElements(prev=>[...prev,{id,x,y}])
   }
 
   function exportPNG(){
