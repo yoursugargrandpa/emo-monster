@@ -42,6 +42,11 @@
 
 _時間標記：2026-01-08T11:38:15.224Z_
 
+## Bug Fix & UI 改善
+
+- [x] 統一按鈕樣式：新增 .btn-secondary、.btn-success、.btn-danger 等
+- [x] 改善黑暗模式顏色對比度：移除硬編碼顏色，使用 CSS 變數
+
 ## 未來改進 (Future Enhancements)
 
 - [x] 黑暗模式支援
