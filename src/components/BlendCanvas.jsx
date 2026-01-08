@@ -487,6 +487,21 @@ export default function BlendCanvas(){
     }catch(e){ console.warn('awardExp error', e) }
   }
 
+  function shareMonster(){
+    const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
+    if(monsters.length === 0){ alert('沒有怪獸可分享'); return }
+    const m = monsters[monsters.length - 1]
+    const text = `🎨 我孵化了一隻 ${m.baseName || m.name}！等級：${m.level}，色彩：${m.color} #EmoMonster`
+    const shareUrl = `${window.location.href}?monster_color=${m.color.replace('#','')}&monster_name=${encodeURIComponent(m.name)}`
+    const fullText = `${text}\n分享: ${shareUrl}`
+    try {
+      navigator.clipboard.writeText(fullText)
+      alert('✓ 已複製到剪貼板！可以分享到 Twitter、Facebook 等平台')
+    } catch(e) {
+      alert(`分享文本：\n${fullText}`)
+    }
+  }
+
   function confirmEvolve(){
     try{
       const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
@@ -668,6 +683,7 @@ export default function BlendCanvas(){
           <button onClick={exportJSON} style={{marginLeft:8}}>匯出 JSON</button>
           <button onClick={exportSVG} style={{marginLeft:8}}>匯出 SVG</button>
           <button onClick={exportBundle} style={{marginLeft:8}}>匯出 Bundle</button>
+          <button onClick={shareMonster} style={{marginLeft:8}}>📤 分享怪獸</button>
         </div>
       </div>
       <div className="palette">
