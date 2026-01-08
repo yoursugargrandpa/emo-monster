@@ -2,9 +2,9 @@ import React, {useRef, useEffect, useState} from 'react'
 import {hexFromRGB, nameFromColor} from '../utils.js'
 
 const EMOTIONS = [
-  {id: 'angry', name: '生氣', emoji: '😠'},
-  {id: 'sad', name: '難過', emoji: '😢'},
-  {id: 'happy', name: '快樂', emoji: '😊'}
+  {id: 'angry', name: '生氣', emoji: '😠', src: '/assets/emotions/angry.png'},
+  {id: 'sad', name: '難過', emoji: '😢', src: '/assets/emotions/sad.png'},
+  {id: 'happy', name: '快樂', emoji: '😊', src: '/assets/emotions/happy.png'}
 ]
 
 
@@ -672,7 +672,7 @@ export default function BlendCanvas(){
       </div>
       <div className="palette">
         {EMOTIONS.map(e=> (
-          <div key={e.id} className="emotion-item" draggable onDragStart={(ev)=>onDragStart(ev,e.id)}>
+          <div key={e.id} className="emotion-item" draggable onDragStart={(ev)=>onDragStart(ev,e.id)} onClick={()=>addEmotionAtCenter(e.id)} style={{cursor:'pointer', transition:'all 200ms ease'}} onMouseEnter={(evt)=>evt.currentTarget.style.transform='scale(1.05)'} onMouseLeave={(evt)=>evt.currentTarget.style.transform='scale(1)'}>
             <div style={{fontSize:'48px', cursor:'grab'}}>{e.emoji}</div>
             <div>{e.name}</div>
           </div>
