@@ -5,6 +5,15 @@ function HistoryCalendar(){
   const [byDate, setByDate] = useState({})
   const [dates, setDates] = useState([])
   const [selected, setSelected] = useState(null)
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('emo_theme') || 'light'
+    const isDark = saved === 'dark'
+    setIsDarkMode(isDark)
+    document.documentElement.setAttribute('data-theme', saved)
+    document.body.setAttribute('data-theme', saved)
+  }, [])
 
   useEffect(()=>{
     const monsters = JSON.parse(localStorage.getItem('emo_monsters') || '[]')
@@ -107,9 +116,35 @@ function HistoryCalendar(){
 }
 
 export default function App(){
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('emo_theme') || 'light'
+    const isDark = saved === 'dark'
+    setIsDarkMode(isDark)
+    applyTheme(saved)
+  }, [])
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme)
+    document.body.setAttribute('data-theme', theme)
+    localStorage.setItem('emo_theme', theme)
+  }
+
+  const toggleDarkMode = () => {
+    const newTheme = isDarkMode ? 'light' : 'dark'
+    setIsDarkMode(!isDarkMode)
+    applyTheme(newTheme)
+  }
+
   return (
     <div className="app">
-      <h1>🎨 情感怪獸 Emo Monster</h1>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 'var(--spacing-lg)'}}>
+        <h1>🎨 情感怪獸 Emo Monster</h1>
+        <button onClick={toggleDarkMode} style={{padding: '8px 16px', background: 'var(--secondary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: '14px', fontWeight: '600', transition: 'all var(--transition-normal)'}}>
+          {isDarkMode ? '☀️ 亮色模式' : '🌙 黑暗模式'}
+        </button>
+      </div>
       <div style={{flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
         <BlendCanvas />
       </div>
