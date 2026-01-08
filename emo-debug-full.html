@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <title>情感怪獸 - 調試版</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        canvas { border: 2px solid black; background: white; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+        #log { background: #f0f0f0; padding: 10px; height: 200px; overflow: auto; border: 1px solid #ccc; margin: 10px 0; }
+        #log p { margin: 2px 0; font-size: 12px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>情感怪獸 - 調試版</h1>
+    
+    <canvas id="canvas" width="640" height="480"></canvas>
+    
+    <div>
+        <button onclick="test1()">測試 1：獲取 Canvas</button>
+        <button onclick="test2()">測試 2：畫紅色圓形</button>
+        <button onclick="test3()">測試 3：完整功能</button>
+    </div>
+    
+    <div id="log">
+        <p>日誌：</p>
+    </div>
+
+    <script>
+        var logEl = document.getElementById('log');
+        
+        function log(msg, isError) {
+            console.log(msg);
+            var p = document.createElement('p');
+            p.textContent = msg;
+            if (isError) p.className = 'error';
+            else p.className = 'success';
+            logEl.appendChild(p);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var colors = [];
+        
+        function test1() {
+            try {
+                log('=== 測試 1：獲取 Canvas ===');
+                log('Canvas 元素: ' + (canvas ? 'OK' : 'FAIL'));
+                log('Canvas 寬: ' + canvas.width);
+                log('Canvas 高: ' + canvas.height);
+                log('2D Context: ' + (ctx ? 'OK' : 'FAIL'));
+            } catch(e) {
+                log('錯誤: ' + e.message, true);
+            }
+        }
+        
+        function test2() {
+            try {
+                log('=== 測試 2：畫紅色圓形 ===');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 640, 480);
+                log('背景已清空');
+                
+                ctx.fillStyle = '#ff0000';
+                log('顏色已設置為紅色');
+                
+                ctx.beginPath();
+                log('beginPath() 已執行');
+                
+                ctx.arc(320, 240, 80, 0, 2 * Math.PI);
+                log('arc() 已執行');
+                
+                ctx.fill();
+                log('fill() 已執行');
+                
+                log('✓ 紅色圓形應該已畫在 canvas 上！');
+            } catch(e) {
+                log('錯誤: ' + e.message, true);
+            }
+        }
+        
+        function test3() {
+            try {
+                log('=== 測試 3：完整功能 ===');
+                
+                // 清空
+                colors = [];
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 640, 480);
+                log('背景已清空');
+                
+                // 添加顏色
+                colors.push('#ff6b6b');
+                log('已添加紅色 #ff6b6b');
+                
+                colors.push('#6bcaff');
+                log('已添加藍色 #6bcaff');
+                
+                colors.push('#ffd93d');
+                log('已添加黃色 #ffd93d');
+                
+                // 繪製所有顏色
+                ctx.globalCompositeOperation = 'lighter';
+                log('已設置 lighter 混合模式');
+                
+                for (var i = 0; i < colors.length; i++) {
+                    log('繪製顏色 ' + i + ': ' + colors[i]);
+                    ctx.fillStyle = colors[i];
+                    ctx.beginPath();
+                    ctx.arc(320, 240, 80, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+                
+                ctx.globalCompositeOperation = 'source-over';
+                log('✓ 三種顏色應該都已在 canvas 上！');
+                
+            } catch(e) {
+                log('錯誤: ' + e.message, true);
+            }
+        }
+        
+        // 自動執行測試 1
+        log('頁面已加載，點擊上面的按鈕進行測試');
+        test1();
+    </script>
+</body>
+</html>

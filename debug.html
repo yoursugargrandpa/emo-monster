@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>調試版本</title>
+<style>
+  body { font-family: Arial; }
+  #log { background: #f0f0f0; padding: 10px; margin: 10px 0; height: 200px; overflow: auto; border: 1px solid #ccc; }
+  #log p { margin: 2px 0; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>調試版本</h1>
+<canvas id="mycanvas" width="200" height="200" style="border: 2px solid black; background: white;"></canvas>
+<button onclick="testDraw()">測試畫圓</button>
+
+<div id="log">
+  <p>日誌：</p>
+</div>
+
+<script>
+function log(msg) {
+  console.log(msg);
+  document.getElementById('log').innerHTML += '<p>' + msg + '</p>';
+}
+
+log('✓ 頁面已加載');
+
+try {
+  log('✓ 開始獲取 canvas');
+  var canvas = document.getElementById('mycanvas');
+  log('✓ canvas 獲取成功，尺寸: ' + canvas.width + 'x' + canvas.height);
+  
+  log('✓ 開始獲取 2D context');
+  var ctx = canvas.getContext('2d');
+  log('✓ context 獲取成功');
+  
+  log('✓ 開始設置填充顏色');
+  ctx.fillStyle = '#ff0000';
+  log('✓ 填充顏色已設置');
+  
+  log('✓ 開始繪製圓形');
+  ctx.beginPath();
+  ctx.arc(100, 100, 30, 0, 2*Math.PI);
+  ctx.fill();
+  log('✓ 圓形已繪製！');
+  
+} catch (e) {
+  log('❌ 錯誤: ' + e.message);
+}
+
+function testDraw() {
+  try {
+    log('✓ 按鈕被點擊');
+    var canvas = document.getElementById('mycanvas');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0000ff';
+    ctx.beginPath();
+    ctx.arc(100, 100, 50, 0, 2*Math.PI);
+    ctx.fill();
+    log('✓ 藍色圓形已畫！');
+    alert('成功！');
+  } catch (e) {
+    log('❌ 錯誤: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>

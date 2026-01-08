@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>像素繪製測試</title>
+</head>
+<body>
+    <h1>像素繪製測試</h1>
+    <canvas id="c" width="400" height="300" style="border: 2px solid black; background: white;"></canvas>
+    <p id="log"></p>
+    <button onclick="drawPixels()">用像素繪製</button>
+
+    <script>
+        var canvas = document.getElementById('c');
+        var ctx = canvas.getContext('2d');
+        var log = document.getElementById('log');
+        
+        function drawPixels() {
+            try {
+                log.innerHTML = '開始用像素繪製...';
+                
+                // 創建像素數據
+                var imageData = ctx.createImageData(400, 300);
+                var data = imageData.data;
+                
+                log.innerHTML += '<br>已創建像素數據';
+                
+                // 填充紅色圓形區域
+                for (var i = 0; i < data.length; i += 4) {
+                    var pixelIndex = i / 4;
+                    var x = pixelIndex % 400;
+                    var y = Math.floor(pixelIndex / 400);
+                    
+                    // 計算到圓心的距離
+                    var dx = x - 200;
+                    var dy = y - 150;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 50) {
+                        data[i] = 255;     // R
+                        data[i + 1] = 0;   // G
+                        data[i + 2] = 0;   // B
+                        data[i + 3] = 255; // A
+                    }
+                }
+                
+                log.innerHTML += '<br>已填充像素';
+                
+                // 繪製
+                ctx.putImageData(imageData, 0, 0);
+                
+                log.innerHTML += '<br>✓ 已繪製！應該能看到紅色圓形';
+            } catch(e) {
+                log.innerHTML += '<br>❌ 錯誤: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

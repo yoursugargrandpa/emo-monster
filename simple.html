@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>測試</title>
+</head>
+<body>
+<h1>Hello World</h1>
+<p>如果你能看到這句話，HTML 正在運作。</p>
+<canvas id="mycanvas" width="200" height="200"></canvas>
+<button onclick="drawCircle()">點擊畫圓形</button>
+
+<script>
+function drawCircle() {
+  var c = document.getElementById("mycanvas");
+  var ctx = c.getContext("2d");
+  ctx.beginPath();
+  ctx.arc(100, 100, 50, 0, 2*Math.PI);
+  ctx.stroke();
+  alert("圓形已畫好！");
+}
+
+// 自動畫一個圓形
+var c = document.getElementById("mycanvas");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.arc(100, 100, 30, 0, 2*Math.PI);
+ctx.fill();
+</script>
+</body>
+</html>
