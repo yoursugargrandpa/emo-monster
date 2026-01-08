@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>測試 JavaScript 是否運作</title>
+</head>
+<body>
+    <h1>檢查本地 index.html</h1>
+    <canvas id="test-canvas" width="640" height="480" style="border: 1px solid #ccc;"></canvas>
+    <p>已添加顏色: <span id="count">0</span></p>
+    <button onclick="testClick()">測試按鈕</button>
+    
+    <script>
+        let count = 0;
+        function testClick() {
+            count++;
+            document.getElementById('count').textContent = count;
+            
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(320, 240, 40, 0, Math.PI * 2);
+            ctx.fill();
+            
+            console.log('✓ JavaScript 運作正常');
+        }
+        
+        // 自動執行一次測試
+        window.onload = function() {
+            console.log('頁面加載完成，嘗試自動繪製...');
+            testClick();
+        };
+    </script>
+</body>
+</html>
